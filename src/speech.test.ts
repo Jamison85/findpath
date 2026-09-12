@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseCommand } from './speech'
+import { createRecognition, parseCommand, speak } from './speech'
 
 describe('parseCommand', () => {
   it.each([
@@ -9,5 +9,10 @@ describe('parseCommand', () => {
     ['check the couch', 'unknown'],
   ])('maps “%s” to %s', (transcript, command) => {
     expect(parseCommand(transcript)).toBe(command)
+  })
+
+  it('fails quietly when browser speech APIs are absent', () => {
+    expect(createRecognition(() => undefined, () => undefined)).toBeNull()
+    expect(speak('Test step')).toBe(false)
   })
 })

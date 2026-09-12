@@ -6,7 +6,7 @@
 - [x] Unit and component tests pass
 - [x] Production build passes
 - [x] Dependency audit has no high or critical production vulnerability
-- [ ] CI passes on the production branch
+- [x] CI passes on the production branch
 
 ## Functional
 
@@ -14,9 +14,9 @@
 - [x] Clue answers visibly change trail order
 - [x] Refresh restores the active search
 - [x] Found location is saved and promoted on the next matching search
-- [ ] History can be cleared only after confirmation
-- [ ] Calm reset resumes the correct screen
-- [ ] Speech features fail gracefully when browser support is absent
+- [x] History can be cleared only after confirmation
+- [x] Calm reset resumes the correct screen
+- [x] Speech features fail gracefully when browser support is absent
 - [x] Offline app shell opens after one successful online visit
 
 ## Visual and accessibility
