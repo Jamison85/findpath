@@ -1,7 +1,5 @@
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
-const trailPath = 'M1008 1080C894 938 858 818 952 710c94-108 250-124 250-242 0-101-196-112-285-190-54-47-42-110 33-184'
-
 export function HomeArtwork() {
   return (
     <div className="home-artwork" role="img" aria-label="A memory trail through an entryway, sofa, kitchen counter, and bedside table">
@@ -15,35 +13,47 @@ export function HomeArtwork() {
       />
       <svg className="home-artwork__trail" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <defs>
-          <linearGradient id="findtrail-path-gradient" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="#d58a68" stopOpacity=".2" />
-            <stop offset="25%" stopColor="#e8c783" stopOpacity=".76" />
-            <stop offset="62%" stopColor="#fff1bd" stopOpacity=".92" />
-            <stop offset="100%" stopColor="#fffaf0" stopOpacity=".18" />
-          </linearGradient>
-          <filter id="findtrail-path-haze" x="-45%" y="-45%" width="190%" height="190%">
-            <feGaussianBlur stdDeviation="13" />
+          <filter id="findtrail-clue-soft" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="5" />
           </filter>
-          <filter id="findtrail-path-soft" x="-35%" y="-35%" width="170%" height="170%">
-            <feGaussianBlur stdDeviation="3.5" />
+          <filter id="findtrail-clue-haze" x="-120%" y="-120%" width="340%" height="340%">
+            <feGaussianBlur stdDeviation="15" />
           </filter>
         </defs>
 
-        <path className="home-artwork__trail-haze" d={trailPath} />
-        <path className="home-artwork__trail-thread home-artwork__trail-thread--outer" d={trailPath} />
-        <path className="home-artwork__trail-thread home-artwork__trail-thread--core" d={trailPath} />
-        <path className="home-artwork__trail-shimmer" pathLength="100" d={trailPath} />
-
-        <g className="home-artwork__wisps">
-          <path d="M982 850c-38-24-54-57-39-91 10-23 35-34 52-53" />
-          <path d="M1175 565c38-28 57-59 48-91-7-24-30-38-42-59" />
-          <path d="M1000 330c-35-13-60-36-62-65-2-23 13-42 28-58" />
-        </g>
-
-        <g className="home-artwork__blooms">
-          <circle cx="983" cy="855" r="22" />
-          <circle cx="1175" cy="564" r="22" />
-          <circle cx="989" cy="329" r="22" />
+        <g className="home-artwork__clues">
+          <g className="home-artwork__clue home-artwork__clue--1" transform="translate(980 846)">
+            <circle className="home-artwork__clue-haze" r="34" />
+            <path className="home-artwork__clue-streak" d="M-42 17c18-8 27-18 38-34 9-13 18-19 32-25" />
+            <circle className="home-artwork__clue-spark" cx="-23" cy="12" r="3.8" />
+            <circle className="home-artwork__clue-dust" cx="-39" cy="26" r="2.2" />
+            <circle className="home-artwork__clue-dust" cx="8" cy="-25" r="1.8" />
+          </g>
+          <g className="home-artwork__clue home-artwork__clue--2" transform="translate(1118 676)">
+            <circle className="home-artwork__clue-haze" r="29" />
+            <path className="home-artwork__clue-streak" d="M-35 19c17-7 26-17 35-30 8-12 18-18 31-21" />
+            <circle className="home-artwork__clue-spark" cx="2" cy="-10" r="3.5" />
+            <circle className="home-artwork__clue-dust" cx="-28" cy="25" r="1.9" />
+          </g>
+          <g className="home-artwork__clue home-artwork__clue--3" transform="translate(1188 508)">
+            <circle className="home-artwork__clue-haze" r="31" />
+            <path className="home-artwork__clue-streak" d="M-31 20c15-9 21-19 27-31 7-14 16-22 29-27" />
+            <circle className="home-artwork__clue-spark" cx="-3" cy="-8" r="3.6" />
+            <circle className="home-artwork__clue-dust" cx="24" cy="-32" r="2" />
+          </g>
+          <g className="home-artwork__clue home-artwork__clue--4" transform="translate(1068 394)">
+            <circle className="home-artwork__clue-haze" r="27" />
+            <path className="home-artwork__clue-streak" d="M-30 17c14-7 21-15 29-27 7-10 15-16 27-20" />
+            <circle className="home-artwork__clue-spark" cx="2" cy="-8" r="3.2" />
+            <circle className="home-artwork__clue-dust" cx="-22" cy="22" r="1.8" />
+          </g>
+          <g className="home-artwork__clue home-artwork__clue--5" transform="translate(982 286)">
+            <circle className="home-artwork__clue-haze home-artwork__clue-haze--found" r="44" />
+            <circle className="home-artwork__clue-found" r="7" />
+            <circle className="home-artwork__clue-dust" cx="-25" cy="18" r="2" />
+            <circle className="home-artwork__clue-dust" cx="24" cy="-16" r="2.3" />
+            <circle className="home-artwork__clue-dust" cx="11" cy="29" r="1.7" />
+          </g>
         </g>
       </svg>
     </div>
