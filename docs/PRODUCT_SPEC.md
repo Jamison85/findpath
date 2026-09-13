@@ -1,4 +1,4 @@
-# FindTrail 2.0 product specification
+# FindTrail 2.1 product specification
 
 ## Job to be done
 
@@ -11,6 +11,7 @@ When an item goes missing and attention starts scattering, FindTrail should hold
 3. Follow one ranked search stop at a time.
 4. Mark the exact place where the item was found.
 5. Use that history to improve later search order.
+6. Optionally make the found place the item’s intentional home.
 
 An interrupted search must survive a refresh or app restart.
 
@@ -20,7 +21,11 @@ An interrupted search must survive a refresh or app restart.
 - Context-aware trail ranking using location, recent activity, item type, and found history
 - One-stop-at-a-time search with optional sub-place checkmarks
 - Active-search recovery
-- Local found-item history and simple pattern summaries
+- Local found-item history, saved home spots, pinned custom items, and simple pattern summaries
+- Future trail ranking learned from both exact locations and successful search areas
+- Item-specific next actions after an unsuccessful first trail
+- Validated local JSON backup and restore
+- User-controlled installed-app update notices
 - Thirty-second visual breathing reset
 - Optional spoken instructions and browser-supported hands-free commands
 - Reduced motion and larger text settings

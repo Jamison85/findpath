@@ -82,7 +82,7 @@ export function TrailView({ search, settings, onBack, onToggleSpot, onNext, onFo
       </div>
 
       <article className={`stop-card stop-card--${stop.kind ?? 'standard'}`}>
-        {stop.reason && <p className="reason"><Icon name={stop.kind === 'history' ? 'history' : stop.kind === 'safety' ? 'spark' : 'trail'} size={17} />{stop.reason}</p>}
+        {stop.reason && <p className="reason"><Icon name={stop.kind === 'home' ? 'pin' : ['history', 'learned'].includes(stop.kind ?? '') ? 'history' : stop.kind === 'safety' ? 'spark' : 'trail'} size={17} />{stop.reason}</p>}
         <p className="kicker">Search this spot. Not the whole universe.</p>
         <h1 id="view-heading" tabIndex={-1}>{stop.title}</h1>
         <p className="stop-card__instruction">{stop.instruction}</p>

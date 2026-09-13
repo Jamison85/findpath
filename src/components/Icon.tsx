@@ -31,6 +31,9 @@ export function Icon({ name, size = 24, className }: IconProps) {
     spark: <><path d="m12 3 1.3 4.7L18 9l-4.7 1.3L12 15l-1.3-4.7L6 9l4.7-1.3Z" /><path d="m18 14 .6 2.4L21 17l-2.4.6L18 20l-.6-2.4L15 17l2.4-.6Z" /></>,
     close: <path d="m6 6 12 12M18 6 6 18" />,
     download: <><path d="M12 3v12m-4-4 4 4 4-4" /><path d="M5 20h14" /></>,
+    upload: <><path d="M12 17V5m-4 4 4-4 4 4" /><path d="M5 20h14" /></>,
+    pin: <><path d="m9 4 6 6m-8 2 5 5m5-10-3 3 3 3-4 4-6-6 4-4 3 3 3-3Z" /><path d="m8 16-4 4" /></>,
+    refresh: <><path d="M20 6v5h-5" /><path d="M4 18v-5h5" /><path d="M18.5 9A7 7 0 0 0 6 6.5L4 11m16 2-2 4.5A7 7 0 0 1 5.5 15" /></>,
   }
 
   return <svg {...common} className={className}>{paths[name]}</svg>

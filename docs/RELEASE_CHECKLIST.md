@@ -14,6 +14,12 @@
 - [x] Clue answers visibly change trail order
 - [x] Refresh restores the active search
 - [x] Found location is saved and promoted on the next matching search
+- [x] Saved home outranks learned guesses but not safety guidance
+- [x] Successful search areas improve later trail order
+- [x] Custom item can be pinned and launched from Home
+- [x] Item-specific next actions appear after the first trail
+- [x] Backup round-trips and malformed backups are rejected
+- [x] Installed-app update notice preserves user control
 - [x] History can be cleared only after confirmation
 - [x] Calm reset resumes the correct screen
 - [x] Speech features fail gracefully when browser support is absent
@@ -30,6 +36,7 @@
 - [x] 200% text zoom without lost controls
 - [x] Reduced-motion preference
 - [x] Screen-reader labels and live announcements
+- [x] 1200 × 630 social preview and 412 × 915 install screenshots
 
 ## Device approval
 
