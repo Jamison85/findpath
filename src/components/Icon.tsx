@@ -34,6 +34,8 @@ export function Icon({ name, size = 24, className }: IconProps) {
     upload: <><path d="M12 17V5m-4 4 4-4 4 4" /><path d="M5 20h14" /></>,
     pin: <><path d="m9 4 6 6m-8 2 5 5m5-10-3 3 3 3-4 4-6-6 4-4 3 3 3-3Z" /><path d="m8 16-4 4" /></>,
     refresh: <><path d="M20 6v5h-5" /><path d="M4 18v-5h5" /><path d="M18.5 9A7 7 0 0 0 6 6.5L4 11m16 2-2 4.5A7 7 0 0 1 5.5 15" /></>,
+    forward: <path d="m9 18 6-6-6-6" />,
+    lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3" /></>,
   }
 
   return <svg {...common} className={className}>{paths[name]}</svg>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { BottomNav } from './components/BottomNav'
 import { CalmReset } from './components/CalmReset'
+import { HomeArtwork } from './components/HomeArtwork'
 import { Icon } from './components/Icon'
 import { Scenery } from './components/Scenery'
 import { TrailView } from './components/TrailView'
@@ -54,6 +55,7 @@ export default function App() {
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null)
   const [updateWorker, setUpdateWorker] = useState<ServiceWorker | null>(null)
   const [backupStatus, setBackupStatus] = useState('')
+  const [historyEntryId, setHistoryEntryId] = useState<string | null>(null)
   const previousScreen = useRef(screen)
 
   const active = data.activeSearch
@@ -104,7 +106,13 @@ export default function App() {
 
   function navigate(next: Screen) {
     if (next === 'calm') setReturnScreen(active?.stops.length ? 'trail' : 'home')
+    setHistoryEntryId(null)
     setScreen(next)
+  }
+
+  function openHistoryEntry(id: string) {
+    setHistoryEntryId(id)
+    setScreen('history')
   }
 
   function updateActive(updater: (current: ActiveSearch) => ActiveSearch) {
@@ -300,12 +308,12 @@ export default function App() {
       {updateWorker && <div className="update-banner" role="status"><span><strong>FindTrail update ready</strong><small>Your trail is saved. Reload when you are ready.</small></span><button onClick={applyUpdate}>Update now</button><button onClick={() => setUpdateWorker(null)} aria-label="Remind me later"><Icon name="close" size={16} /></button></div>}
       {storageError && <div className="storage-banner" role="alert">This browser blocked saving. Keep this tab open until your search is finished.<button onClick={() => setStorageError(false)} aria-label="Dismiss"><Icon name="close" size={17} /></button></div>}
       <main id="app-content" className={rootScreen ? 'app-content app-content--with-nav' : 'app-content'}>
-        {screen === 'home' && <HomeView data={data} customOpen={customOpen} customName={customName} setCustomOpen={setCustomOpen} setCustomName={setCustomName} onStart={startSearch} onResume={resumeSearch} onDiscard={discardActive} />}
+        {screen === 'home' && <HomeView data={data} customOpen={customOpen} customName={customName} setCustomOpen={setCustomOpen} setCustomName={setCustomName} onStart={startSearch} onResume={resumeSearch} onDiscard={discardActive} onOpenHistory={openHistoryEntry} />}
         {screen === 'clues' && active && activeItem && <ClueView search={active} question={activeItem.questions[clueIndex]} index={clueIndex} total={activeItem.questions.length} onAnswer={answerClue} onBack={() => clueIndex === 0 ? setScreen('home') : setClueIndex((value) => value - 1)} />}
         {screen === 'trail' && active && active.stops[active.currentIndex] && <TrailView search={active} settings={data.settings} onBack={() => setScreen('home')} onToggleSpot={toggleSpot} onNext={nextStop} onFound={openFound} onCalm={() => { setReturnScreen('trail'); setScreen('calm') }} onEditClues={() => { setClueIndex(0); setScreen('clues') }} />}
         {screen === 'found' && active && <FoundView search={active} value={foundLocation} saveAsHome={saveAsHome} pinCustomItem={pinCustomItem} onChange={setFoundLocation} onSaveAsHome={setSaveAsHome} onPinCustomItem={setPinCustomItem} onSave={saveFound} onBack={() => setScreen('trail')} />}
         {screen === 'complete' && foundSummary && <CompleteView summary={foundSummary} onHome={() => setScreen('home')} onAnother={() => setScreen('home')} />}
-        {screen === 'history' && <HistoryView history={data.history} onStart={startSearch} onClear={clearHistory} />}
+        {screen === 'history' && <HistoryView history={data.history} initialEntryId={historyEntryId} onStart={startSearch} onClear={clearHistory} />}
         {screen === 'calm' && <CalmReset hasSearch={Boolean(active?.stops.length)} onResume={() => setScreen(returnScreen === 'trail' && !active ? 'home' : returnScreen)} />}
         {screen === 'settings' && <SettingsView data={data} canInstall={Boolean(installPrompt)} backupStatus={backupStatus} onUpdate={updateSettings} onUpdateSavedItem={updateSavedItem} onRemoveSavedItem={removeSavedItem} onInstall={installApp} onExport={exportBackup} onRestore={restoreBackup} onClear={clearHistory} />}
         {screen === 'end' && active && <EndView search={active} onFound={openFound} onReset={() => { setReturnScreen('end'); setScreen('calm') }} onRestart={() => { updateActive((current) => ({ ...current, currentIndex: 0, checkedSpots: {} })); setScreen('trail') }} onHome={() => setScreen('home')} />}
@@ -324,39 +332,40 @@ interface HomeViewProps {
   onStart: (itemId: ItemId, label?: string) => void
   onResume: () => void
   onDiscard: () => void
+  onOpenHistory: (id: string) => void
 }
 
-function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, onStart, onResume, onDiscard }: HomeViewProps) {
+function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, onStart, onResume, onDiscard, onOpenHistory }: HomeViewProps) {
   const latest = data.history[0]
   const pinnedItems = data.savedItems.filter((item) => item.itemId === 'other' && item.pinned)
   return (
-    <section className="view home-view" aria-labelledby="view-heading">
-      <header className="brand-header">
-        <div className="brand-lockup"><span className="brand-mark"><Icon name="trail" /></span><strong>FindTrail</strong></div>
-        <span className="local-pill">Private on this device</span>
-      </header>
+    <section className={data.activeSearch ? 'view home-view home-view--active' : 'view home-view'} aria-labelledby="view-heading">
+      <section className="home-hero">
+        <HomeArtwork />
+        <header className="brand-header">
+          <div className="brand-lockup"><span className="brand-mark"><Icon name="trail" /></span><strong>FindTrail</strong></div>
+          <span className="local-pill"><Icon name="lock" size={13} />Private on this device</span>
+        </header>
 
-      {data.activeSearch ? (
-        <article className="resume-card">
-          <div className="resume-card__icon"><Icon name={ITEM_BY_ID[data.activeSearch.itemId].icon} /></div>
-          <div>
-            <span>Trail in progress</span>
-            <h1 id="view-heading" tabIndex={-1}>Keep looking for {data.activeSearch.itemLabel.toLocaleLowerCase()}?</h1>
-            <p>{data.activeSearch.stops.length ? `Ready at stop ${data.activeSearch.currentIndex + 1}.` : 'Your clues are saved.'}</p>
-          </div>
-          <button className="button button--primary" onClick={onResume}>Resume trail</button>
-          <button className="text-button text-button--muted" onClick={onDiscard}>End this search</button>
-        </article>
-      ) : (
-        <div className="home-intro">
+        {data.activeSearch ? (
+          <article className="resume-card">
+            <div className="resume-card__icon"><Icon name={ITEM_BY_ID[data.activeSearch.itemId].icon} /></div>
+            <div>
+              <span>Trail in progress</span>
+              <h1 id="view-heading" tabIndex={-1}>Keep looking for {data.activeSearch.itemLabel.toLocaleLowerCase()}?</h1>
+              <p>{data.activeSearch.stops.length ? `Ready at stop ${data.activeSearch.currentIndex + 1}.` : 'Your clues are saved.'}</p>
+            </div>
+            <button className="button button--primary" onClick={onResume}>Resume trail</button>
+            <button className="text-button text-button--muted" onClick={onDiscard}>End this search</button>
+          </article>
+        ) : (
           <div className="hero-copy">
-            <span className="eyebrow">A calmer path to what’s missing</span>
-            <h1 id="view-heading" tabIndex={-1}>Lost the thing?<br /><em>Keep your head.</em></h1>
-            <p>Pick what vanished. FindTrail gives you the next sensible place. No house tornado required.</p>
+            <span className="eyebrow">Retrace with a plan</span>
+            <h1 id="view-heading" tabIndex={-1} aria-label="A clear path to finding what’s missing.">A clear path to<br /><em>finding what’s missing.</em></h1>
+            <p>Choose what’s missing. FindTrail organizes your search and keeps you moving toward the next likely place.</p>
           </div>
-          <Scenery />
-        </div>
-      )}
+        )}
+      </section>
 
       <div className="item-picker">
         <div className="section-heading">
@@ -368,22 +377,38 @@ function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, 
         </div>}
         <div className="item-grid">
           {ITEMS.map((item) => (
-            <button key={item.id} className={item.id === 'other' && customOpen ? 'item-button is-active' : 'item-button'} onClick={() => item.id === 'other' ? setCustomOpen(!customOpen) : onStart(item.id)}>
-              <span><Icon name={item.icon} size={23} /></span>
+            <button key={item.id} className={item.id === 'other' && customOpen ? 'item-button is-active' : 'item-button'} onClick={() => item.id === 'other' ? setCustomOpen(!customOpen) : onStart(item.id)} aria-haspopup={item.id === 'other' ? 'dialog' : undefined} aria-expanded={item.id === 'other' ? customOpen : undefined}>
+              <span className="item-button__icon"><Icon name={item.icon} size={23} /></span>
               <strong>{item.label}</strong>
               <small>{item.hint}</small>
             </button>
           ))}
         </div>
-        {customOpen && (
-          <form className="custom-item" onSubmit={(event) => { event.preventDefault(); if (customName.trim()) onStart('other', customName) }}>
-            <label htmlFor="custom-name">What are we finding?</label>
-            <div><input id="custom-name" value={customName} onChange={(event) => setCustomName(event.target.value)} placeholder="Example: work badge" autoFocus maxLength={40} /><button className="button button--primary" disabled={!customName.trim()}>Start</button></div>
-          </form>
-        )}
       </div>
 
-      {latest && !data.activeSearch && <button className="recent-strip" onClick={() => onStart(latest.itemId, latest.itemLabel)}><Icon name="history" size={19} /><span>Last found</span><strong>{latest.itemLabel}</strong><small>{latest.foundLocation}</small></button>}
+      {!data.activeSearch && (latest ? (
+        <button className="recent-card" onClick={() => onOpenHistory(latest.id)} aria-label={`Open ${latest.itemLabel}, found at ${latest.foundLocation}, in history`}>
+          <span className="recent-card__icon"><Icon name="history" size={23} /></span>
+          <span className="recent-card__copy"><small>Last found</small><strong>{latest.itemLabel}</strong><span>{latest.foundLocation}</span></span>
+          <span className="recent-card__arrow"><Icon name="forward" size={20} /></span>
+        </button>
+      ) : (
+        <div className="recent-card recent-card--empty">
+          <span className="recent-card__icon"><Icon name="trail" size={23} /></span>
+          <span className="recent-card__copy"><small>Your first trail</small><strong>Ready when you are.</strong><span>Recent finds will appear here.</span></span>
+        </div>
+      ))}
+
+      {customOpen && (
+        <div className="custom-item-scrim" onMouseDown={(event) => { if (event.currentTarget === event.target) setCustomOpen(false) }}>
+          <form className="custom-item" role="dialog" aria-modal="true" aria-label="Custom item" onKeyDown={(event) => { if (event.key === 'Escape') setCustomOpen(false) }} onSubmit={(event) => { event.preventDefault(); if (customName.trim()) onStart('other', customName) }}>
+            <div className="custom-item__heading"><div><span className="eyebrow">Other item</span><h2 id="custom-item-heading">What are we finding?</h2></div><button type="button" className="icon-button" onClick={() => setCustomOpen(false)} aria-label="Close custom item"><Icon name="close" size={19} /></button></div>
+            <label htmlFor="custom-name">What are we finding?</label>
+            <input id="custom-name" value={customName} onChange={(event) => setCustomName(event.target.value)} placeholder="Example: work badge" autoFocus maxLength={40} />
+            <button className="button button--primary button--wide" disabled={!customName.trim()}>Start a trail</button>
+          </form>
+        </div>
+      )}
     </section>
   )
 }
@@ -452,19 +477,37 @@ function CompleteView({ summary, onHome, onAnother }: { summary: FoundSummary; o
   )
 }
 
-function HistoryView({ history, onStart, onClear }: { history: FoundEntry[]; onStart: (itemId: ItemId, label?: string) => void; onClear: () => void }) {
+function HistoryView({ history, initialEntryId, onStart, onClear }: { history: FoundEntry[]; initialEntryId: string | null; onStart: (itemId: ItemId, label?: string) => void; onClear: () => void }) {
+  const [expandedId, setExpandedId] = useState<string | null>(initialEntryId)
   const pattern = useMemo(() => {
     if (!history.length) return null
     const latest = history[0]
     return { item: latest, likely: mostLikelyLocation(history, latest.itemId, latest.itemLabel) }
   }, [history])
+  useEffect(() => setExpandedId(initialEntryId), [initialEntryId])
   return (
     <section className="view history-view" aria-labelledby="view-heading">
       <header className="page-heading"><span className="eyebrow">Patterns, not judgment</span><h1 id="view-heading" tabIndex={-1}>Found history</h1><p>Your device remembers the useful part: where things actually turned up.</p></header>
       {pattern?.likely && <article className="pattern-card"><Icon name="spark" /><div><span>Current usual suspect</span><strong>{pattern.item.itemLabel}: {pattern.likely.location}</strong><small>Found there {pattern.likely.count} {pattern.likely.count === 1 ? 'time' : 'times'}</small></div></article>}
       {!history.length ? <div className="empty-state"><Icon name="history" size={34} /><h2>No found places yet</h2><p>Complete one search and the helpful patterns begin here.</p></div> : (
         <div className="history-list">
-          {history.map((entry) => <button key={entry.id} className="history-row" onClick={() => onStart(entry.itemId, entry.itemLabel)}><span className="history-row__icon"><Icon name={ITEM_BY_ID[entry.itemId].icon} size={20} /></span><span><strong>{entry.itemLabel}</strong><small>{entry.foundLocation}</small></span><time dateTime={entry.foundAt}>{dateLabel(entry.foundAt)}</time></button>)}
+          {history.map((entry) => {
+            const expanded = expandedId === entry.id
+            const detailId = `history-detail-${entry.id}`
+            return <article key={entry.id} className={expanded ? 'history-entry is-expanded' : 'history-entry'}>
+              <button className="history-row" onClick={() => setExpandedId(expanded ? null : entry.id)} aria-expanded={expanded} aria-controls={detailId}>
+                <span className="history-row__icon"><Icon name={ITEM_BY_ID[entry.itemId].icon} size={20} /></span>
+                <span><strong>{entry.itemLabel}</strong><small>{entry.foundLocation}</small></span>
+                <span className="history-row__end"><time dateTime={entry.foundAt}>{dateLabel(entry.foundAt)}</time><Icon name="forward" size={16} /></span>
+              </button>
+              {expanded && <div id={detailId} className="history-entry__detail">
+                <div><span>Found at</span><strong>{entry.foundLocation}</strong></div>
+                <div><span>Stops checked</span><strong>{entry.stopsChecked}</strong></div>
+                <div><span>Search time</span><strong>{formatDuration(entry.durationSeconds)}</strong></div>
+                <button className="button button--secondary" onClick={() => onStart(entry.itemId, entry.itemLabel)}>Find {entry.itemLabel.toLocaleLowerCase()} again</button>
+              </div>}
+            </article>
+          })}
         </div>
       )}
       {history.length > 0 && <button className="text-button danger-link" onClick={onClear}>Clear found history</button>}
@@ -505,7 +548,7 @@ function SettingsView({ data, canInstall, backupStatus, onUpdate, onUpdateSavedI
         {backupStatus && <p className="backup-status" role="status">{backupStatus}</p>}
         <button className="button button--danger-outline" onClick={onClear} disabled={!data.history.length}>Clear found history</button>
       </div>
-      <footer className="version-note">FindTrail 2.1.2 · A calmer path to what’s missing.</footer>
+      <footer className="version-note">FindTrail 2.2.0 · A clear path to finding what’s missing.</footer>
     </section>
   )
 }

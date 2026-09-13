@@ -11,7 +11,8 @@ describe('FindTrail app', () => {
 
   it('turns three clues into a focused trail', () => {
     render(<App />)
-    expect(screen.getByText('A calmer path to what’s missing')).toBeInTheDocument()
+    expect(screen.getByText('Retrace with a plan')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'A clear path to finding what’s missing.' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /keys/i }))
     fireEvent.click(screen.getByText('Car keys'))
     fireEvent.click(screen.getByText('At home'))
@@ -24,7 +25,7 @@ describe('FindTrail app', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /other item/i }))
     fireEvent.change(screen.getByLabelText('What are we finding?'), { target: { value: 'Work badge' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Start a trail' }))
     expect(screen.getByText('Work badge')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'How does this item usually travel?' })).toBeInTheDocument()
   })
@@ -33,7 +34,7 @@ describe('FindTrail app', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /other item/i }))
     fireEvent.change(screen.getByLabelText('What are we finding?'), { target: { value: 'Work badge' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Start a trail' }))
     fireEvent.click(screen.getByText('Carried in a hand'))
     fireEvent.click(screen.getByText('At home'))
     fireEvent.click(screen.getByText('Came in or left'))
@@ -71,6 +72,31 @@ describe('FindTrail app', () => {
     expect(screen.getByText('FindTrail update ready')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Update now' }))
     expect(postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' })
+  })
+
+  it('fills the first-use home state without pretending there is history', () => {
+    render(<App />)
+    expect(screen.getByText('Ready when you are.')).toBeInTheDocument()
+    expect(screen.getByText('Recent finds will appear here.')).toBeInTheDocument()
+    expect(screen.queryByText('Last found')).not.toBeInTheDocument()
+  })
+
+  it('opens the latest found entry from the home card', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      activeSearch: null,
+      settings: DEFAULT_SETTINGS,
+      history: [{
+        id: 'found-1', itemId: 'keys', itemLabel: 'Keys', foundLocation: 'Entry hook',
+        foundAt: '2026-09-12T12:00:00.000Z', answers: {}, stopsChecked: 2, durationSeconds: 30,
+      }],
+    }))
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: /open keys, found at entry hook, in history/i }))
+    expect(screen.getByRole('heading', { name: 'Found history' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Find keys again' })).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('30 sec')).toBeInTheDocument()
   })
 
   it('requires confirmation before clearing found history', () => {

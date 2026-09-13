@@ -10,6 +10,9 @@
 
 ## Functional
 
+- [x] Home custom-item sheet opens and submits without changing page height
+- [x] Home recent-find card opens the matching history detail
+- [x] First-use Home state remains useful without saved history
 - [x] Common-item and custom-item searches complete
 - [x] Clue answers visibly change trail order
 - [x] Refresh restores the active search
@@ -27,10 +30,10 @@
 
 ## Visual and accessibility
 
-- [x] 360 × 800 Android viewport
-- [x] 412 × 915 Galaxy-class viewport
-- [x] 430 × 932 iPhone-class viewport
-- [x] 768 × 1024 tablet viewport
+- [ ] Home 2.2 at 360 × 800 Android viewport
+- [ ] Home 2.2 at 412 × 915 Galaxy-class viewport
+- [ ] Home 2.2 at 430 × 932 iPhone-class viewport
+- [ ] Home 2.2 at 768 × 1024 tablet viewport
 - [x] Keyboard-only navigation
 - [x] Visible focus states and logical focus order
 - [x] 200% text zoom without lost controls
