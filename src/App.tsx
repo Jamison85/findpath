@@ -262,7 +262,7 @@ function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, 
         </article>
       ) : (
         <div className="hero-copy">
-          <span className="eyebrow">Retrace, don’t unravel</span>
+          <span className="eyebrow">A calmer path to what’s missing</span>
           <h1 id="view-heading" tabIndex={-1}>Lost the thing?<br /><em>Keep your head.</em></h1>
           <p>FindTrail holds the search plan so you only have to check the next sensible place. No frantic house tornado required.</p>
         </div>
@@ -398,7 +398,7 @@ function SettingsView({ settings, historyCount, canInstall, onUpdate, onInstall,
         <div className="data-count"><span>Saved finds</span><strong>{historyCount}</strong></div>
         <button className="button button--danger-outline" onClick={onClear} disabled={!historyCount}>Clear found history</button>
       </div>
-      <footer className="version-note">FindTrail 2.0 · Built to retrace, not unravel.</footer>
+      <footer className="version-note">FindTrail 2.0 · A calmer path to what’s missing.</footer>
     </section>
   )
 }

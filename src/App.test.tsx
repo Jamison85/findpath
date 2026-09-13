@@ -11,6 +11,7 @@ describe('FindTrail app', () => {
 
   it('turns three clues into a focused trail', () => {
     render(<App />)
+    expect(screen.getByText('A calmer path to what’s missing')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /keys/i }))
     fireEvent.click(screen.getByText('Car keys'))
     fireEvent.click(screen.getByText('At home'))
