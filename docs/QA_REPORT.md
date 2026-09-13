@@ -12,7 +12,7 @@ Run date: 2026-09-13
 | Production dependency audit | 0 vulnerabilities |
 | Browser console and uncaught errors | 0 |
 | Axe accessibility scan | 0 violations across 13 screen and viewport states |
-| Hosted GitHub Actions | Pending release branch |
+| Hosted GitHub Actions | Pass on PR #3 |
 
 ## Browser and resilience checks
 
