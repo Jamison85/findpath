@@ -348,14 +348,15 @@ function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, 
           <button className="text-button text-button--muted" onClick={onDiscard}>End this search</button>
         </article>
       ) : (
-        <div className="hero-copy">
-          <span className="eyebrow">A calmer path to what’s missing</span>
-          <h1 id="view-heading" tabIndex={-1}>Lost the thing?<br /><em>Keep your head.</em></h1>
-          <p>FindTrail holds the search plan so you only have to check the next sensible place. No frantic house tornado required.</p>
+        <div className="home-intro">
+          <div className="hero-copy">
+            <span className="eyebrow">A calmer path to what’s missing</span>
+            <h1 id="view-heading" tabIndex={-1}>Lost the thing?<br /><em>Keep your head.</em></h1>
+            <p>Pick what vanished. FindTrail gives you the next sensible place. No house tornado required.</p>
+          </div>
+          <Scenery />
         </div>
       )}
-
-      {!data.activeSearch && <Scenery />}
 
       <div className="item-picker">
         <div className="section-heading">
@@ -504,7 +505,7 @@ function SettingsView({ data, canInstall, backupStatus, onUpdate, onUpdateSavedI
         {backupStatus && <p className="backup-status" role="status">{backupStatus}</p>}
         <button className="button button--danger-outline" onClick={onClear} disabled={!data.history.length}>Clear found history</button>
       </div>
-      <footer className="version-note">FindTrail 2.1 · A calmer path to what’s missing.</footer>
+      <footer className="version-note">FindTrail 2.1.1 · A calmer path to what’s missing.</footer>
     </section>
   )
 }
