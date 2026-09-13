@@ -2,7 +2,7 @@
 
 FindTrail is a calm, local-first progressive web app for finding misplaced items. It turns a frantic whole-house search into one useful place at a time, remembers where items were found, and gently promotes likely locations during future searches.
 
-Version 2.1 adds saved home spots, pinned custom items, stronger learning from successful search areas, item-specific next actions, local backup and restore, and update-ready notices. Version 2.1.1 compacts the home screen so the complete item picker stays in the first view on common phone sizes.
+Version 2.1 adds saved home spots, pinned custom items, stronger learning from successful search areas, item-specific next actions, local backup and restore, and update-ready notices. Version 2.1.2 balances the no-scroll home screen with roomier controls and intentional use of taller phone displays.
 
 ## Product principles
 
