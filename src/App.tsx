@@ -505,7 +505,7 @@ function SettingsView({ data, canInstall, backupStatus, onUpdate, onUpdateSavedI
         {backupStatus && <p className="backup-status" role="status">{backupStatus}</p>}
         <button className="button button--danger-outline" onClick={onClear} disabled={!data.history.length}>Clear found history</button>
       </div>
-      <footer className="version-note">FindTrail 2.1.1 · A calmer path to what’s missing.</footer>
+      <footer className="version-note">FindTrail 2.1.2 · A calmer path to what’s missing.</footer>
     </section>
   )
 }
