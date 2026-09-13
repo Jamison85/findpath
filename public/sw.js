@@ -1,9 +1,9 @@
-const VERSION = 'findtrail-v2.1.2-2026-09-13'
+const VERSION = 'findtrail-v2.2.0-2026-09-13'
 const STATIC_CACHE = `${VERSION}-static`
 const RUNTIME_CACHE = `${VERSION}-runtime`
 const BASE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, '')
 const scoped = (path) => `${BASE_PATH}${path}` || '/'
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/social-preview.png'].map(scoped)
+const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png', '/social-preview.png', '/home-memory-trail.webp'].map(scoped)
 
 async function precacheAppShell() {
   const cache = await caches.open(STATIC_CACHE)

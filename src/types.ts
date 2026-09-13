@@ -27,6 +27,8 @@ export type IconName =
   | 'upload'
   | 'pin'
   | 'refresh'
+  | 'forward'
+  | 'lock'
 
 export interface ClueOption {
   value: string
