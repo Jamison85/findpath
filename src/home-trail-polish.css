@@ -1,112 +1,116 @@
-/* Signature Findtrail path polish.
-   Keeps the existing Home composition intact while making the trail readable,
-   dimensional, and meaningfully animated. */
+/* Findtrail's Home trail should feel like a memory being followed, not a map route. */
 
-.home-artwork__trail {
-  overflow: visible;
-}
+.home-artwork__trail { overflow: visible; }
 
-.home-artwork__trail-shadow,
-.home-artwork__trail-base,
-.home-artwork__trail-glow {
+.home-artwork__trail-haze,
+.home-artwork__trail-thread,
+.home-artwork__trail-shimmer,
+.home-artwork__wisps path {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.home-artwork__trail-shadow {
-  stroke: rgba(23, 58, 52, .18);
-  stroke-width: 30;
-  filter: blur(5px);
+.home-artwork__trail-haze {
+  stroke: #f4d996;
+  stroke-width: 34;
+  opacity: .18;
+  filter: url(#findtrail-path-haze);
+  animation: findtrail-breathe 5.8s ease-in-out infinite alternate;
 }
 
-.home-artwork__trail-base {
+.home-artwork__trail-thread--outer {
   stroke: url(#findtrail-path-gradient);
-  stroke-width: 17;
-  opacity: .96;
-  filter: drop-shadow(0 5px 8px rgba(23, 58, 52, .18));
+  stroke-width: 11;
+  opacity: .58;
+  filter: url(#findtrail-path-soft);
   stroke-dasharray: 1500;
   stroke-dashoffset: 1500;
-  animation: findtrail-draw 1.25s cubic-bezier(.2, .8, .2, 1) forwards;
+  animation: findtrail-draw 1.8s cubic-bezier(.2,.72,.2,1) forwards;
 }
 
-.home-artwork__trail-glow {
-  stroke: #fff9df;
-  stroke-width: 9;
-  opacity: .95;
-  filter: url(#findtrail-path-glow);
-  stroke-dasharray: 8 92;
-  stroke-dashoffset: 0;
-  animation: findtrail-travel 3.6s linear 1.05s infinite;
+.home-artwork__trail-thread--core {
+  stroke: url(#findtrail-path-gradient);
+  stroke-width: 4.5;
+  opacity: .9;
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 1500;
+  filter: drop-shadow(0 1px 4px rgba(255,244,204,.55));
+  animation: findtrail-draw 2.05s cubic-bezier(.2,.72,.2,1) .08s forwards;
 }
 
-.home-artwork__waypoints circle {
-  fill: #fff9df;
-  stroke: #bd6245;
-  stroke-width: 7;
-  opacity: 0;
+.home-artwork__trail-shimmer {
+  stroke: #fffdf3;
+  stroke-width: 6;
+  opacity: .72;
+  filter: url(#findtrail-path-soft);
+  stroke-dasharray: 3 7 14 76;
+  animation: findtrail-shimmer 5.6s linear 1.4s infinite;
+}
+
+.home-artwork__wisps path {
+  stroke: #fff0bd;
+  stroke-width: 5;
+  opacity: .22;
+  filter: url(#findtrail-path-soft);
+  stroke-dasharray: 8 15 22 18;
+  animation: findtrail-wisp 6.8s ease-in-out infinite;
+}
+.home-artwork__wisps path:nth-child(2) { animation-delay: -2.1s; }
+.home-artwork__wisps path:nth-child(3) { animation-delay: -4.2s; }
+
+.home-artwork__blooms circle {
+  fill: #fff8d9;
+  stroke: none;
+  opacity: .18;
   transform-box: fill-box;
   transform-origin: center;
-  filter: drop-shadow(0 3px 8px rgba(23, 58, 52, .2));
-  animation: findtrail-waypoint-in .38s ease forwards;
+  filter: url(#findtrail-path-haze);
+  animation: findtrail-bloom 4.8s ease-in-out infinite;
 }
-
-.home-artwork__waypoints circle:nth-child(1) { animation-delay: .42s; }
-.home-artwork__waypoints circle:nth-child(2) { animation-delay: .72s; }
-.home-artwork__waypoints circle:nth-child(3) { animation-delay: 1.02s; }
+.home-artwork__blooms circle:nth-child(2) { animation-delay: -1.5s; }
+.home-artwork__blooms circle:nth-child(3) { animation-delay: -3s; }
 
 @keyframes findtrail-draw {
-  from { stroke-dashoffset: 1500; opacity: .35; }
-  to { stroke-dashoffset: 0; opacity: .96; }
+  from { stroke-dashoffset: 1500; opacity: .08; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes findtrail-shimmer {
+  from { stroke-dashoffset: 0; opacity: .28; }
+  35% { opacity: .82; }
+  70% { opacity: .48; }
+  to { stroke-dashoffset: -100; opacity: .28; }
+}
+@keyframes findtrail-breathe {
+  from { opacity: .1; }
+  to { opacity: .24; }
+}
+@keyframes findtrail-wisp {
+  0%,100% { opacity: .08; transform: translate(0, 0); }
+  45% { opacity: .3; transform: translate(7px, -5px); }
+  70% { opacity: .16; transform: translate(11px, -10px); }
+}
+@keyframes findtrail-bloom {
+  0%,100% { opacity: .08; transform: scale(.62); }
+  48% { opacity: .28; transform: scale(1.18); }
 }
 
-@keyframes findtrail-travel {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: -100; }
-}
-
-@keyframes findtrail-waypoint-in {
-  0% { opacity: 0; transform: scale(.5); }
-  70% { opacity: 1; transform: scale(1.12); }
-  100% { opacity: .96; transform: scale(1); }
-}
-
-:root[data-motion="reduced"] .home-artwork__trail-base,
-:root[data-motion="reduced"] .home-artwork__trail-glow,
-:root[data-motion="reduced"] .home-artwork__waypoints circle {
-  animation: none !important;
-}
-
-:root[data-motion="reduced"] .home-artwork__trail-base {
-  stroke-dashoffset: 0;
-}
-
-:root[data-motion="reduced"] .home-artwork__trail-glow {
-  display: none;
-}
-
-:root[data-motion="reduced"] .home-artwork__waypoints circle {
-  opacity: .96;
-  transform: none;
-}
+:root[data-motion="reduced"] .home-artwork__trail-haze,
+:root[data-motion="reduced"] .home-artwork__trail-thread,
+:root[data-motion="reduced"] .home-artwork__trail-shimmer,
+:root[data-motion="reduced"] .home-artwork__wisps path,
+:root[data-motion="reduced"] .home-artwork__blooms circle { animation: none !important; }
+:root[data-motion="reduced"] .home-artwork__trail-thread { stroke-dashoffset: 0; }
+:root[data-motion="reduced"] .home-artwork__trail-shimmer,
+:root[data-motion="reduced"] .home-artwork__wisps { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion="full"]) .home-artwork__trail-base,
-  :root:not([data-motion="full"]) .home-artwork__trail-glow,
-  :root:not([data-motion="full"]) .home-artwork__waypoints circle {
-    animation: none !important;
-  }
-
-  :root:not([data-motion="full"]) .home-artwork__trail-base {
-    stroke-dashoffset: 0;
-  }
-
-  :root:not([data-motion="full"]) .home-artwork__trail-glow {
-    display: none;
-  }
-
-  :root:not([data-motion="full"]) .home-artwork__waypoints circle {
-    opacity: .96;
-    transform: none;
-  }
+  :root:not([data-motion="full"]) .home-artwork__trail-haze,
+  :root:not([data-motion="full"]) .home-artwork__trail-thread,
+  :root:not([data-motion="full"]) .home-artwork__trail-shimmer,
+  :root:not([data-motion="full"]) .home-artwork__wisps path,
+  :root:not([data-motion="full"]) .home-artwork__blooms circle { animation: none !important; }
+  :root:not([data-motion="full"]) .home-artwork__trail-thread { stroke-dashoffset: 0; }
+  :root:not([data-motion="full"]) .home-artwork__trail-shimmer,
+  :root:not([data-motion="full"]) .home-artwork__wisps { display: none; }
 }
