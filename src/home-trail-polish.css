@@ -1,0 +1,112 @@
+/* Signature Findtrail path polish.
+   Keeps the existing Home composition intact while making the trail readable,
+   dimensional, and meaningfully animated. */
+
+.home-artwork__trail {
+  overflow: visible;
+}
+
+.home-artwork__trail-shadow,
+.home-artwork__trail-base,
+.home-artwork__trail-glow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.home-artwork__trail-shadow {
+  stroke: rgba(23, 58, 52, .18);
+  stroke-width: 30;
+  filter: blur(5px);
+}
+
+.home-artwork__trail-base {
+  stroke: url(#findtrail-path-gradient);
+  stroke-width: 17;
+  opacity: .96;
+  filter: drop-shadow(0 5px 8px rgba(23, 58, 52, .18));
+  stroke-dasharray: 1500;
+  stroke-dashoffset: 1500;
+  animation: findtrail-draw 1.25s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+.home-artwork__trail-glow {
+  stroke: #fff9df;
+  stroke-width: 9;
+  opacity: .95;
+  filter: url(#findtrail-path-glow);
+  stroke-dasharray: 8 92;
+  stroke-dashoffset: 0;
+  animation: findtrail-travel 3.6s linear 1.05s infinite;
+}
+
+.home-artwork__waypoints circle {
+  fill: #fff9df;
+  stroke: #bd6245;
+  stroke-width: 7;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  filter: drop-shadow(0 3px 8px rgba(23, 58, 52, .2));
+  animation: findtrail-waypoint-in .38s ease forwards;
+}
+
+.home-artwork__waypoints circle:nth-child(1) { animation-delay: .42s; }
+.home-artwork__waypoints circle:nth-child(2) { animation-delay: .72s; }
+.home-artwork__waypoints circle:nth-child(3) { animation-delay: 1.02s; }
+
+@keyframes findtrail-draw {
+  from { stroke-dashoffset: 1500; opacity: .35; }
+  to { stroke-dashoffset: 0; opacity: .96; }
+}
+
+@keyframes findtrail-travel {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -100; }
+}
+
+@keyframes findtrail-waypoint-in {
+  0% { opacity: 0; transform: scale(.5); }
+  70% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: .96; transform: scale(1); }
+}
+
+:root[data-motion="reduced"] .home-artwork__trail-base,
+:root[data-motion="reduced"] .home-artwork__trail-glow,
+:root[data-motion="reduced"] .home-artwork__waypoints circle {
+  animation: none !important;
+}
+
+:root[data-motion="reduced"] .home-artwork__trail-base {
+  stroke-dashoffset: 0;
+}
+
+:root[data-motion="reduced"] .home-artwork__trail-glow {
+  display: none;
+}
+
+:root[data-motion="reduced"] .home-artwork__waypoints circle {
+  opacity: .96;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) .home-artwork__trail-base,
+  :root:not([data-motion="full"]) .home-artwork__trail-glow,
+  :root:not([data-motion="full"]) .home-artwork__waypoints circle {
+    animation: none !important;
+  }
+
+  :root:not([data-motion="full"]) .home-artwork__trail-base {
+    stroke-dashoffset: 0;
+  }
+
+  :root:not([data-motion="full"]) .home-artwork__trail-glow {
+    display: none;
+  }
+
+  :root:not([data-motion="full"]) .home-artwork__waypoints circle {
+    opacity: .96;
+    transform: none;
+  }
+}
