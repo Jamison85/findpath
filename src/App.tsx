@@ -5,9 +5,10 @@ import { Icon } from './components/Icon'
 import { Scenery } from './components/Scenery'
 import { TrailView } from './components/TrailView'
 import { ITEMS, ITEM_BY_ID } from './data'
+import { getRecoveryActions } from './recovery'
 import { buildTrail, getFoundSuggestions, mostLikelyLocation } from './trailEngine'
-import { createActiveSearch, loadData, saveData } from './storage'
-import type { ActiveSearch, ClueQuestion, FoundEntry, ItemId, PersistedData, Screen, Settings } from './types'
+import { createActiveSearch, itemIdentity, loadData, parseBackup, saveData, serializeBackup } from './storage'
+import type { ActiveSearch, ClueQuestion, FoundEntry, ItemId, PersistedData, SavedItem, Screen, Settings } from './types'
 
 interface InstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -44,11 +45,15 @@ export default function App() {
   const [customOpen, setCustomOpen] = useState(false)
   const [customName, setCustomName] = useState('')
   const [foundLocation, setFoundLocation] = useState('')
+  const [saveAsHome, setSaveAsHome] = useState(false)
+  const [pinCustomItem, setPinCustomItem] = useState(true)
   const [foundSummary, setFoundSummary] = useState<FoundSummary | null>(null)
   const [returnScreen, setReturnScreen] = useState<Screen>('home')
   const [storageError, setStorageError] = useState(false)
   const [online, setOnline] = useState(() => navigator.onLine)
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null)
+  const [updateWorker, setUpdateWorker] = useState<ServiceWorker | null>(null)
+  const [backupStatus, setBackupStatus] = useState('')
   const previousScreen = useRef(screen)
 
   const active = data.activeSearch
@@ -73,6 +78,15 @@ export default function App() {
       window.removeEventListener('offline', offlineHandler)
       window.removeEventListener('beforeinstallprompt', installHandler)
     }
+  }, [])
+
+  useEffect(() => {
+    const updateHandler = (event: Event) => {
+      const worker = (event as CustomEvent<{ worker: ServiceWorker }>).detail?.worker
+      if (worker) setUpdateWorker(worker)
+    }
+    window.addEventListener('findtrail:update-ready', updateHandler)
+    return () => window.removeEventListener('findtrail:update-ready', updateHandler)
   }, [])
 
   useEffect(() => {
@@ -119,7 +133,7 @@ export default function App() {
       setClueIndex((current) => current + 1)
       return
     }
-    const stops = buildTrail(active.itemId, active.itemLabel, answers, data.history)
+    const stops = buildTrail(active.itemId, active.itemLabel, answers, data.history, data.savedItems)
     updateActive((current) => ({ ...current, answers, stops, currentIndex: 0, checkedSpots: {} }))
     setScreen('trail')
   }
@@ -162,6 +176,8 @@ export default function App() {
 
   function openFound() {
     setFoundLocation('')
+    setSaveAsHome(false)
+    setPinCustomItem(true)
     setScreen('found')
   }
 
@@ -178,9 +194,28 @@ export default function App() {
       answers: active.answers,
       stopsChecked: active.currentIndex + 1,
       durationSeconds,
+      foundStopId: active.stops[active.currentIndex]?.id,
+      foundSpot: foundLocation.trim(),
     }
     setFoundSummary({ itemLabel: active.itemLabel, location: entry.foundLocation, seconds: durationSeconds })
-    setData((current) => ({ ...current, history: [entry, ...current.history].slice(0, 100), activeSearch: null }))
+    setData((current) => {
+      let savedItems = current.savedItems
+      if (saveAsHome) {
+        const id = itemIdentity(active.itemId, active.itemLabel)
+        const existing = savedItems.find((item) => item.id === id)
+        const saved: SavedItem = {
+          id,
+          itemId: active.itemId,
+          itemLabel: active.itemLabel,
+          homeSpot: entry.foundLocation,
+          pinned: active.itemId === 'other' ? pinCustomItem : false,
+          createdAt: existing?.createdAt ?? now.toISOString(),
+          updatedAt: now.toISOString(),
+        }
+        savedItems = [saved, ...savedItems.filter((item) => item.id !== id)]
+      }
+      return { ...current, history: [entry, ...current.history].slice(0, 100), savedItems, activeSearch: null }
+    })
     setScreen('complete')
   }
 
@@ -199,6 +234,56 @@ export default function App() {
     setData((current) => ({ ...current, history: [] }))
   }
 
+  function updateSavedItem(id: string, next: Partial<Pick<SavedItem, 'homeSpot' | 'pinned'>>) {
+    setData((current) => ({
+      ...current,
+      savedItems: current.savedItems.map((item) => item.id === id
+        ? { ...item, ...next, homeSpot: next.homeSpot ?? item.homeSpot, updatedAt: new Date().toISOString() }
+        : item),
+    }))
+  }
+
+  function removeSavedItem(id: string) {
+    const item = data.savedItems.find((entry) => entry.id === id)
+    if (!item || !window.confirm(`Forget the saved home for ${item.itemLabel}? Found history will stay.`)) return
+    setData((current) => ({ ...current, savedItems: current.savedItems.filter((entry) => entry.id !== id) }))
+  }
+
+  function exportBackup() {
+    const blob = new Blob([serializeBackup(data)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `findtrail-backup-${new Date().toISOString().slice(0, 10)}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+    setBackupStatus('Backup downloaded.')
+  }
+
+  async function restoreBackup(file: File) {
+    setBackupStatus('')
+    let contents: string
+    try {
+      contents = await file.text()
+    } catch {
+      setBackupStatus('The backup file could not be read.')
+      return
+    }
+    const parsed = parseBackup(contents)
+    if (!parsed.ok) {
+      setBackupStatus(parsed.error)
+      return
+    }
+    const summary = `${parsed.data.history.length} found ${parsed.data.history.length === 1 ? 'place' : 'places'} and ${parsed.data.savedItems.length} saved ${parsed.data.savedItems.length === 1 ? 'home' : 'homes'}`
+    if (!window.confirm(`Restore ${summary}? This will replace the FindTrail data on this device.`)) return
+    setData(parsed.data)
+    setBackupStatus('Backup restored.')
+  }
+
+  function applyUpdate() {
+    updateWorker?.postMessage({ type: 'SKIP_WAITING' })
+  }
+
   async function installApp() {
     if (!installPrompt) return
     await installPrompt.prompt()
@@ -212,16 +297,17 @@ export default function App() {
     <div className="app-shell">
       <a className="skip-link" href="#app-content">Skip to content</a>
       {!online && <div className="offline-banner" role="status">Offline mode · your saved trail still works</div>}
+      {updateWorker && <div className="update-banner" role="status"><span><strong>FindTrail update ready</strong><small>Your trail is saved. Reload when you are ready.</small></span><button onClick={applyUpdate}>Update now</button><button onClick={() => setUpdateWorker(null)} aria-label="Remind me later"><Icon name="close" size={16} /></button></div>}
       {storageError && <div className="storage-banner" role="alert">This browser blocked saving. Keep this tab open until your search is finished.<button onClick={() => setStorageError(false)} aria-label="Dismiss"><Icon name="close" size={17} /></button></div>}
       <main id="app-content" className={rootScreen ? 'app-content app-content--with-nav' : 'app-content'}>
         {screen === 'home' && <HomeView data={data} customOpen={customOpen} customName={customName} setCustomOpen={setCustomOpen} setCustomName={setCustomName} onStart={startSearch} onResume={resumeSearch} onDiscard={discardActive} />}
         {screen === 'clues' && active && activeItem && <ClueView search={active} question={activeItem.questions[clueIndex]} index={clueIndex} total={activeItem.questions.length} onAnswer={answerClue} onBack={() => clueIndex === 0 ? setScreen('home') : setClueIndex((value) => value - 1)} />}
         {screen === 'trail' && active && active.stops[active.currentIndex] && <TrailView search={active} settings={data.settings} onBack={() => setScreen('home')} onToggleSpot={toggleSpot} onNext={nextStop} onFound={openFound} onCalm={() => { setReturnScreen('trail'); setScreen('calm') }} onEditClues={() => { setClueIndex(0); setScreen('clues') }} />}
-        {screen === 'found' && active && <FoundView search={active} value={foundLocation} onChange={setFoundLocation} onSave={saveFound} onBack={() => setScreen('trail')} />}
+        {screen === 'found' && active && <FoundView search={active} value={foundLocation} saveAsHome={saveAsHome} pinCustomItem={pinCustomItem} onChange={setFoundLocation} onSaveAsHome={setSaveAsHome} onPinCustomItem={setPinCustomItem} onSave={saveFound} onBack={() => setScreen('trail')} />}
         {screen === 'complete' && foundSummary && <CompleteView summary={foundSummary} onHome={() => setScreen('home')} onAnother={() => setScreen('home')} />}
         {screen === 'history' && <HistoryView history={data.history} onStart={startSearch} onClear={clearHistory} />}
         {screen === 'calm' && <CalmReset hasSearch={Boolean(active?.stops.length)} onResume={() => setScreen(returnScreen === 'trail' && !active ? 'home' : returnScreen)} />}
-        {screen === 'settings' && <SettingsView settings={data.settings} historyCount={data.history.length} canInstall={Boolean(installPrompt)} onUpdate={updateSettings} onInstall={installApp} onClear={clearHistory} />}
+        {screen === 'settings' && <SettingsView data={data} canInstall={Boolean(installPrompt)} backupStatus={backupStatus} onUpdate={updateSettings} onUpdateSavedItem={updateSavedItem} onRemoveSavedItem={removeSavedItem} onInstall={installApp} onExport={exportBackup} onRestore={restoreBackup} onClear={clearHistory} />}
         {screen === 'end' && active && <EndView search={active} onFound={openFound} onReset={() => { setReturnScreen('end'); setScreen('calm') }} onRestart={() => { updateActive((current) => ({ ...current, currentIndex: 0, checkedSpots: {} })); setScreen('trail') }} onHome={() => setScreen('home')} />}
       </main>
       {rootScreen && <BottomNav active={screen} onNavigate={navigate} />}
@@ -242,6 +328,7 @@ interface HomeViewProps {
 
 function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, onStart, onResume, onDiscard }: HomeViewProps) {
   const latest = data.history[0]
+  const pinnedItems = data.savedItems.filter((item) => item.itemId === 'other' && item.pinned)
   return (
     <section className="view home-view" aria-labelledby="view-heading">
       <header className="brand-header">
@@ -275,6 +362,9 @@ function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, 
           <div><span>Start here</span><h2>What went missing?</h2></div>
           <small>One tap</small>
         </div>
+        {pinnedItems.length > 0 && <div className="pinned-items" role="group" aria-label="Pinned items">
+          {pinnedItems.map((item) => <button key={item.id} className="pinned-item" onClick={() => onStart('other', item.itemLabel)}><Icon name="pin" size={15} /><span>{item.itemLabel}</span></button>)}
+        </div>}
         <div className="item-grid">
           {ITEMS.map((item) => (
             <button key={item.id} className={item.id === 'other' && customOpen ? 'item-button is-active' : 'item-button'} onClick={() => item.id === 'other' ? setCustomOpen(!customOpen) : onStart(item.id)}>
@@ -324,7 +414,7 @@ function ClueView({ search, question, index, total, onAnswer, onBack }: { search
   )
 }
 
-function FoundView({ search, value, onChange, onSave, onBack }: { search: ActiveSearch; value: string; onChange: (value: string) => void; onSave: () => void; onBack: () => void }) {
+function FoundView({ search, value, saveAsHome, pinCustomItem, onChange, onSaveAsHome, onPinCustomItem, onSave, onBack }: { search: ActiveSearch; value: string; saveAsHome: boolean; pinCustomItem: boolean; onChange: (value: string) => void; onSaveAsHome: (value: boolean) => void; onPinCustomItem: (value: boolean) => void; onSave: () => void; onBack: () => void }) {
   const stop = search.stops[search.currentIndex]
   const options = getFoundSuggestions(search.itemId, stop)
   return (
@@ -338,6 +428,10 @@ function FoundView({ search, value, onChange, onSave, onBack }: { search: Active
         {options.map((option) => <button key={option} className={value === option ? 'chip is-selected' : 'chip'} onClick={() => onChange(option)}>{option}</button>)}
       </div>
       <label className="field"><span>Or type the exact place</span><input value={value} onChange={(event) => onChange(event.target.value)} placeholder="Example: black hoodie pocket" maxLength={80} /></label>
+      <div className="remember-options">
+        <SettingToggle label={`Make this ${search.itemLabel}’s home spot`} detail="FindTrail will put it at the front next time." checked={saveAsHome} onChange={onSaveAsHome} />
+        {search.itemId === 'other' && saveAsHome && <SettingToggle label={`Pin ${search.itemLabel} on Home`} detail="Start this search again with one tap." checked={pinCustomItem} onChange={onPinCustomItem} />}
+      </div>
       <button className="button button--primary button--wide" onClick={onSave} disabled={!value.trim()}>Save found place</button>
     </section>
   )
@@ -377,28 +471,40 @@ function HistoryView({ history, onStart, onClear }: { history: FoundEntry[]; onS
   )
 }
 
-function SettingsView({ settings, historyCount, canInstall, onUpdate, onInstall, onClear }: { settings: Settings; historyCount: number; canInstall: boolean; onUpdate: (next: Partial<Settings>) => void; onInstall: () => void; onClear: () => void }) {
+function SettingsView({ data, canInstall, backupStatus, onUpdate, onUpdateSavedItem, onRemoveSavedItem, onInstall, onExport, onRestore, onClear }: { data: PersistedData; canInstall: boolean; backupStatus: string; onUpdate: (next: Partial<Settings>) => void; onUpdateSavedItem: (id: string, next: Partial<Pick<SavedItem, 'homeSpot' | 'pinned'>>) => void; onRemoveSavedItem: (id: string) => void; onInstall: () => void; onExport: () => void; onRestore: (file: File) => void; onClear: () => void }) {
+  const fileInput = useRef<HTMLInputElement>(null)
   return (
     <section className="view settings-view" aria-labelledby="view-heading">
       <header className="page-heading"><span className="eyebrow">Make it yours</span><h1 id="view-heading" tabIndex={-1}>Settings</h1><p>Useful controls. No cockpit full of switches.</p></header>
       {canInstall && <button className="install-card" onClick={onInstall}><span><Icon name="download" /></span><div><strong>Install FindTrail</strong><small>Add it to your home screen for quicker access.</small></div><b>Install</b></button>}
       <div className="settings-group">
         <h2>During a search</h2>
-        <SettingToggle label="Read new stops aloud" detail="Uses your device’s built-in voice." checked={settings.speakSteps} onChange={(value) => onUpdate({ speakSteps: value })} />
-        <SettingToggle label="Offer a reset every 3 stops" detail="A pause, not a forced timeout." checked={settings.calmPause} onChange={(value) => onUpdate({ calmPause: value })} />
+        <SettingToggle label="Read new stops aloud" detail="Uses your device’s built-in voice." checked={data.settings.speakSteps} onChange={(value) => onUpdate({ speakSteps: value })} />
+        <SettingToggle label="Offer a reset every 3 stops" detail="A pause, not a forced timeout." checked={data.settings.calmPause} onChange={(value) => onUpdate({ calmPause: value })} />
       </div>
       <div className="settings-group">
         <h2>Appearance</h2>
-        <label className="select-setting"><span><strong>Motion</strong><small>System follows your phone setting.</small></span><select value={settings.motion} onChange={(event) => onUpdate({ motion: event.target.value as Settings['motion'] })}><option value="system">Use system setting</option><option value="full">Full motion</option><option value="reduced">Reduced motion</option></select></label>
-        <SettingToggle label="Larger text" detail="Adds breathing room and a little more scrolling." checked={settings.textSize === 'large'} onChange={(value) => onUpdate({ textSize: value ? 'large' : 'standard' })} />
+        <label className="select-setting"><span><strong>Motion</strong><small>System follows your phone setting.</small></span><select value={data.settings.motion} onChange={(event) => onUpdate({ motion: event.target.value as Settings['motion'] })}><option value="system">Use system setting</option><option value="full">Full motion</option><option value="reduced">Reduced motion</option></select></label>
+        <SettingToggle label="Larger text" detail="Adds breathing room and a little more scrolling." checked={data.settings.textSize === 'large'} onChange={(value) => onUpdate({ textSize: value ? 'large' : 'standard' })} />
+      </div>
+      <div className="settings-group saved-homes">
+        <h2>Saved home spots</h2>
+        {!data.savedItems.length && <p className="settings-empty">When you find something, you can save that exact place as its home.</p>}
+        {data.savedItems.map((item) => <SavedHomeRow key={item.id} item={item} onUpdate={onUpdateSavedItem} onRemove={onRemoveSavedItem} />)}
       </div>
       <div className="settings-group settings-group--privacy">
         <h2>Your data</h2>
         <p>Everything stays in this browser on this device. No account, analytics, ads, or mystery cloud bucket.</p>
-        <div className="data-count"><span>Saved finds</span><strong>{historyCount}</strong></div>
-        <button className="button button--danger-outline" onClick={onClear} disabled={!historyCount}>Clear found history</button>
+        <div className="data-count"><span>Saved finds</span><strong>{data.history.length}</strong></div>
+        <div className="backup-actions">
+          <button className="button button--secondary" onClick={onExport}><Icon name="download" size={18} />Export backup</button>
+          <button className="button button--secondary" onClick={() => fileInput.current?.click()}><Icon name="upload" size={18} />Restore backup</button>
+          <input ref={fileInput} className="sr-only" type="file" accept="application/json,.json" aria-label="Choose FindTrail backup file" onChange={(event) => { const file = event.target.files?.[0]; if (file) void onRestore(file); event.target.value = '' }} />
+        </div>
+        {backupStatus && <p className="backup-status" role="status">{backupStatus}</p>}
+        <button className="button button--danger-outline" onClick={onClear} disabled={!data.history.length}>Clear found history</button>
       </div>
-      <footer className="version-note">FindTrail 2.0 · A calmer path to what’s missing.</footer>
+      <footer className="version-note">FindTrail 2.1 · A calmer path to what’s missing.</footer>
     </section>
   )
 }
@@ -407,17 +513,42 @@ function SettingToggle({ label, detail, checked, onChange }: { label: string; de
   return <label className="toggle-setting"><span><strong>{label}</strong><small>{detail}</small></span><input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} /><i aria-hidden="true" /></label>
 }
 
+function SavedHomeRow({ item, onUpdate, onRemove }: { item: SavedItem; onUpdate: (id: string, next: Partial<Pick<SavedItem, 'homeSpot' | 'pinned'>>) => void; onRemove: (id: string) => void }) {
+  const [draft, setDraft] = useState(item.homeSpot)
+  useEffect(() => setDraft(item.homeSpot), [item.homeSpot])
+
+  function commit() {
+    const next = draft.trim()
+    if (!next) {
+      setDraft(item.homeSpot)
+      return
+    }
+    if (next !== item.homeSpot) onUpdate(item.id, { homeSpot: next })
+  }
+
+  return <div className="saved-home-row">
+    <span><strong>{item.itemLabel}</strong><small>{item.itemId === 'other' ? 'Custom item' : 'Saved first stop'}</small></span>
+    <label><span className="sr-only">Home spot for {item.itemLabel}</span><input value={draft} maxLength={80} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.blur() }} /></label>
+    {item.itemId === 'other' && <button className={item.pinned ? 'mini-action is-active' : 'mini-action'} onClick={() => onUpdate(item.id, { pinned: !item.pinned })} aria-pressed={item.pinned}><Icon name="pin" size={15} />{item.pinned ? 'Pinned' : 'Pin'}</button>}
+    <button className="mini-action mini-action--danger" onClick={() => onRemove(item.id)}>Forget</button>
+  </div>
+}
+
 function EndView({ search, onFound, onReset, onRestart, onHome }: { search: ActiveSearch; onFound: () => void; onReset: () => void; onRestart: () => void; onHome: () => void }) {
+  const actions = getRecoveryActions(search)
   return (
     <section className="view end-view" aria-labelledby="view-heading">
       <div className="end-view__mark"><Icon name="trail" size={36} /></div>
       <span className="eyebrow">First trail complete</span>
       <h1 id="view-heading" tabIndex={-1}>Don’t search harder yet.</h1>
       <p>You checked {search.stops.length} sensible stops. A reset or another set of eyes usually beats turning the house upside down.</p>
+      <div className="recovery-actions" aria-label={`Next actions for ${search.itemLabel}`}>
+        {actions.map((action, index) => <article key={action.title}><span>{index + 1}</span><div><strong>{action.title}</strong><p>{action.detail}</p></div></article>)}
+      </div>
       <button className="button button--found button--wide" onClick={onFound}>Actually, I found it</button>
       <button className="button button--primary button--wide" onClick={onReset}>Take a 30-second reset</button>
       <button className="button button--secondary button--wide" onClick={onRestart}>Repeat the trail slowly</button>
-      <button className="button button--quiet button--wide" onClick={onHome}>Save it for later</button>
+      <button className="button button--quiet button--wide" onClick={onHome}>Keep this trail saved</button>
     </section>
   )
 }

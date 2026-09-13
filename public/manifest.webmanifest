@@ -1,7 +1,7 @@
 {
   "name": "FindTrail",
   "short_name": "FindTrail",
-  "description": "A calm, practical trail for finding misplaced things.",
+  "description": "A calmer path to what’s missing.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -15,6 +15,10 @@
     { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "./screenshots/home.png", "sizes": "412x915", "type": "image/png", "form_factor": "narrow", "label": "Choose a missing item from FindTrail’s calm home screen" },
+    { "src": "./screenshots/trail.png", "sizes": "412x915", "type": "image/png", "form_factor": "narrow", "label": "Follow one focused search stop at a time" }
   ],
   "shortcuts": [
     { "name": "Start a search", "short_name": "Find something", "url": "./?start=1", "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }] },

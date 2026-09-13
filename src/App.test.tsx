@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { DEFAULT_SETTINGS, STORAGE_KEY } from './storage'
@@ -29,6 +29,29 @@ describe('FindTrail app', () => {
     expect(screen.getByRole('heading', { name: 'How does this item usually travel?' })).toBeInTheDocument()
   })
 
+  it('saves a custom home spot, pins the item, and promotes that home next time', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: /other item/i }))
+    fireEvent.change(screen.getByLabelText('What are we finding?'), { target: { value: 'Work badge' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    fireEvent.click(screen.getByText('Carried in a hand'))
+    fireEvent.click(screen.getByText('At home'))
+    fireEvent.click(screen.getByText('Came in or left'))
+    fireEvent.click(screen.getByRole('button', { name: 'Found it' }))
+    fireEvent.change(screen.getByLabelText('Or type the exact place'), { target: { value: 'Entry tray' } })
+    fireEvent.click(screen.getByRole('checkbox', { name: /make this work badge’s home spot/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save found place' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Back home' }))
+
+    const pinned = screen.getByRole('group', { name: 'Pinned items' })
+    fireEvent.click(within(pinned).getByRole('button', { name: 'Work badge' }))
+    fireEvent.click(screen.getByText('Carried in a hand'))
+    fireEvent.click(screen.getByText('At home'))
+    fireEvent.click(screen.getByText('Came in or left'))
+    expect(screen.getByRole('heading', { name: 'Its saved home' })).toBeInTheDocument()
+    expect(screen.getByText(/start at entry tray/i)).toBeInTheDocument()
+  })
+
   it('returns to the same trail after a reset', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /keys/i }))
@@ -39,6 +62,15 @@ describe('FindTrail app', () => {
     expect(screen.getByRole('heading', { name: 'The search can wait one breath.' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Return to my trail' }))
     expect(screen.getByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
+  })
+
+  it('announces an installed-app update and applies it on request', () => {
+    const postMessage = vi.fn()
+    render(<App />)
+    fireEvent(window, new CustomEvent('findtrail:update-ready', { detail: { worker: { postMessage } } }))
+    expect(screen.getByText('FindTrail update ready')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Update now' }))
+    expect(postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' })
   })
 
   it('requires confirmation before clearing found history', () => {

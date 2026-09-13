@@ -24,6 +24,9 @@ export type IconName =
   | 'spark'
   | 'close'
   | 'download'
+  | 'upload'
+  | 'pin'
+  | 'refresh'
 
 export interface ClueOption {
   value: string
@@ -55,7 +58,7 @@ export interface SearchStop {
   instruction: string
   spots: string[]
   reason?: string
-  kind?: 'standard' | 'history' | 'safety' | 'final'
+  kind?: 'standard' | 'history' | 'home' | 'learned' | 'safety' | 'final'
 }
 
 export interface FoundEntry {
@@ -67,10 +70,22 @@ export interface FoundEntry {
   answers: Record<string, string>
   stopsChecked: number
   durationSeconds: number
+  foundStopId?: string
+  foundSpot?: string
+}
+
+export interface SavedItem {
+  id: string
+  itemId: ItemId
+  itemLabel: string
+  homeSpot: string
+  pinned: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ActiveSearch {
-  version: 2
+  version: 3
   id: string
   itemId: ItemId
   itemLabel: string
@@ -90,8 +105,14 @@ export interface Settings {
 }
 
 export interface PersistedData {
-  version: 2
+  version: 3
   history: FoundEntry[]
   activeSearch: ActiveSearch | null
   settings: Settings
+  savedItems: SavedItem[]
+}
+
+export interface RecoveryAction {
+  title: string
+  detail: string
 }
