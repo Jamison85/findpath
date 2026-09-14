@@ -1,8 +1,8 @@
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
 // Search stops are anchored to the visible tabletop surfaces in the Home artwork:
-// bedside table -> kitchen counter by the stool -> keys on the entry table.
-const searchPath = 'M650 748C760 730 930 688 1110 668C1184 660 1240 658 1270 650C1240 560 1188 460 1150 368C1126 310 1104 266 1068 242'
+// right of the glasses on the bedside table -> kitchen counter by the stool -> keys on the entry table.
+const searchPath = 'M735 742C820 724 960 686 1110 668C1184 660 1240 658 1270 650C1240 560 1188 460 1150 368C1126 310 1104 266 1068 242'
 
 export function HomeArtwork() {
   return (
@@ -27,8 +27,8 @@ export function HomeArtwork() {
 
         <path className="home-artwork__search-guide" d={searchPath} pathLength="100" />
 
-        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--bed" cx="650" cy="748" r="38" />
-        <circle className="home-artwork__miss-core home-artwork__miss-core--bed" cx="650" cy="748" r="8.5" />
+        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--bed" cx="735" cy="742" r="38" />
+        <circle className="home-artwork__miss-core home-artwork__miss-core--bed" cx="735" cy="742" r="8.5" />
 
         <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--kitchen" cx="1270" cy="650" r="38" />
         <circle className="home-artwork__miss-core home-artwork__miss-core--kitchen" cx="1270" cy="650" r="8.5" />
