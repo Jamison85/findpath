@@ -1,4 +1,4 @@
-/* Findtrail Home: begin clean, then let the memory trail sweep itself across the scene. */
+/* Findtrail Home: a moving memory ribbon follows the established trail shape. */
 
 .home-artwork__trail { overflow: visible; }
 
@@ -9,89 +9,90 @@
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
+  opacity: 0;
 }
 
+/* All four layers use the exact same SVG path. Only a short section is visible,
+   so the trail moves along the existing curve instead of drawing and staying put. */
 .home-artwork__trail .home-artwork__flow-haze {
   stroke: #f1d28a;
   stroke-width: 30;
-  opacity: 0;
   filter: url(#findtrail-flow-haze);
-  animation: findtrail-flow-reveal 8.4s cubic-bezier(.2,.72,.2,1) infinite;
+  stroke-dasharray: 27 73;
+  stroke-dashoffset: 28;
+  animation: findtrail-ribbon-travel 6.8s ease-in-out infinite;
 }
 
 .home-artwork__trail .home-artwork__flow-body {
   stroke: url(#findtrail-flow-gradient);
   stroke-width: 10;
-  opacity: 0;
   filter: url(#findtrail-flow-soft);
-  animation: findtrail-flow-reveal 8.4s cubic-bezier(.2,.72,.2,1) infinite;
+  stroke-dasharray: 25 75;
+  stroke-dashoffset: 26;
+  animation: findtrail-ribbon-travel 6.8s ease-in-out infinite;
 }
 
 .home-artwork__trail .home-artwork__flow-core {
   stroke: #fff2bd;
   stroke-width: 3.6;
-  opacity: 0;
   filter: drop-shadow(0 0 5px rgba(255,235,166,.72));
-  animation: findtrail-flow-reveal 8.4s cubic-bezier(.2,.72,.2,1) infinite;
+  stroke-dasharray: 22 78;
+  stroke-dashoffset: 23;
+  animation: findtrail-ribbon-travel 6.8s ease-in-out infinite;
 }
 
+/* Small brighter leading glint that rides just ahead of the ribbon. */
 .home-artwork__trail .home-artwork__flow-shimmer {
   stroke: #fffdf4;
   stroke-width: 5;
-  opacity: 0;
   filter: url(#findtrail-flow-soft);
   stroke-dasharray: 5 95;
-  stroke-dashoffset: 105;
-  animation: findtrail-flow-head 8.4s linear infinite;
+  stroke-dashoffset: 6;
+  animation: findtrail-ribbon-head 6.8s ease-in-out infinite;
 }
 
-@keyframes findtrail-flow-reveal {
-  0%, 9% {
-    stroke-dashoffset: 100;
+@keyframes findtrail-ribbon-travel {
+  0%, 10% {
+    stroke-dashoffset: 28;
     opacity: 0;
   }
-  13% {
-    opacity: .22;
+  15% {
+    opacity: .28;
   }
-  20% {
+  21% {
     opacity: .92;
-  }
-  62% {
-    stroke-dashoffset: 0;
-    opacity: .94;
   }
   74% {
-    stroke-dashoffset: 0;
-    opacity: .82;
+    opacity: .9;
   }
-  88%, 100% {
-    stroke-dashoffset: 0;
+  82% {
+    opacity: .34;
+  }
+  90%, 100% {
+    stroke-dashoffset: -100;
     opacity: 0;
   }
 }
 
-@keyframes findtrail-flow-head {
-  0%, 9% {
-    stroke-dashoffset: 105;
+@keyframes findtrail-ribbon-head {
+  0%, 10% {
+    stroke-dashoffset: 7;
     opacity: 0;
   }
-  14% {
-    opacity: .25;
+  17% {
+    opacity: .35;
   }
-  22% {
-    opacity: .92;
+  24% {
+    opacity: .96;
   }
-  62% {
-    stroke-dashoffset: 0;
-    opacity: .9;
+  73% {
+    opacity: .82;
   }
-  68% {
-    opacity: .34;
+  84% {
+    opacity: .18;
   }
-  76%, 100% {
-    stroke-dashoffset: 0;
+  90%, 100% {
+    stroke-dashoffset: -121;
     opacity: 0;
   }
 }
@@ -105,8 +106,9 @@
 
 :root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-body,
 :root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-core {
+  stroke-dasharray: 100;
   stroke-dashoffset: 0;
-  opacity: .72;
+  opacity: .58;
 }
 
 :root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-haze,
@@ -124,8 +126,9 @@
 
   :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-body,
   :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-core {
+    stroke-dasharray: 100;
     stroke-dashoffset: 0;
-    opacity: .72;
+    opacity: .58;
   }
 
   :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-haze,
