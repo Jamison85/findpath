@@ -1,10 +1,10 @@
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
-// Three deliberate legs. Each one ends on an exact checkpoint instead of relying on
-// percentage positions along one oversized path.
-const phoneToRemote = 'M735 742C650 770 555 792 470 830C610 872 790 800 920 666C965 620 996 580 1018 548'
-const remoteToKitchen = 'M1018 548C1096 558 1188 608 1270 650'
-const kitchenToKeys = 'M1270 650C1236 536 1196 424 1152 344C1124 294 1094 260 1068 242'
+// Three deliberate legs. Coordinates are calibrated against the rendered Home artwork
+// (cover crop + artwork positioning) so the orb lands on the visible objects.
+const phoneToRemote = 'M735 742C650 770 555 792 470 830C610 872 790 760 900 560C925 512 946 456 965 416'
+const remoteToKitchen = 'M965 416C1080 430 1248 452 1384 476'
+const kitchenToKeys = 'M1384 476C1298 430 1218 370 1152 344C1124 294 1094 260 1068 242'
 
 export function HomeArtwork() {
   return (
@@ -31,11 +31,11 @@ export function HomeArtwork() {
         <path className="home-artwork__search-guide" d={remoteToKitchen} />
         <path className="home-artwork__search-guide" d={kitchenToKeys} />
 
-        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--remote" cx="1018" cy="548" r="38" />
-        <circle className="home-artwork__miss-core home-artwork__miss-core--remote" cx="1018" cy="548" r="8.5" />
+        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--remote" cx="965" cy="416" r="38" />
+        <circle className="home-artwork__miss-core home-artwork__miss-core--remote" cx="965" cy="416" r="8.5" />
 
-        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--kitchen" cx="1270" cy="650" r="38" />
-        <circle className="home-artwork__miss-core home-artwork__miss-core--kitchen" cx="1270" cy="650" r="8.5" />
+        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--kitchen" cx="1384" cy="476" r="38" />
+        <circle className="home-artwork__miss-core home-artwork__miss-core--kitchen" cx="1384" cy="476" r="8.5" />
 
         <circle className="home-artwork__found-pulse" cx="1068" cy="242" r="44" />
         <circle className="home-artwork__found-core" cx="1068" cy="242" r="9" />
