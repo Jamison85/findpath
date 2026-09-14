@@ -17,10 +17,13 @@ interface TrailViewProps {
 export function TrailView({ search, settings, onBack, onToggleSpot, onNext, onFound, onCalm, onEditClues }: TrailViewProps) {
   const stop = search.stops[search.currentIndex]
   const checked = search.checkedSpots[stop.id] ?? []
+  const totalChecked = Object.values(search.checkedSpots).reduce((total, spots) => total + spots.length, 0)
+  const isLastStop = search.currentIndex === search.stops.length - 1
   const [listening, setListening] = useState(false)
   const [heard, setHeard] = useState('')
   const [voiceError, setVoiceError] = useState('')
   const recognitionRef = useRef<ReturnType<typeof createRecognition>>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
   const voiceSupported = typeof window !== 'undefined' && Boolean(window.SpeechRecognition ?? window.webkitSpeechRecognition)
   const spokenText = useMemo(() => `${stop.title}. ${stop.instruction}. Check ${stop.spots.join(', ')}.`, [stop])
 
@@ -30,6 +33,7 @@ export function TrailView({ search, settings, onBack, onToggleSpot, onNext, onFo
 
   useEffect(() => {
     if (settings.speakSteps) readCurrent()
+    headingRef.current?.focus({ preventScroll: true })
     return stopSpeaking
     // Reading should happen only when the trail stop changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,16 +81,22 @@ export function TrailView({ search, settings, onBack, onToggleSpot, onNext, onFo
         <button className="text-button" onClick={onEditClues}>Clues</button>
       </header>
 
-      <div className="trail-progress" role="progressbar" aria-label="Search trail progress" aria-valuemin={1} aria-valuemax={search.stops.length} aria-valuenow={search.currentIndex + 1}>
-        <span style={{ width: `${((search.currentIndex + 1) / search.stops.length) * 100}%` }} />
+      <div className="trail-route">
+        <div className="trail-progress" role="progressbar" aria-label="Search trail progress" aria-valuemin={1} aria-valuemax={search.stops.length} aria-valuenow={search.currentIndex + 1}>
+          <span style={{ width: `${((search.currentIndex + 1) / search.stops.length) * 100}%` }} />
+        </div>
+        <span>{totalChecked ? `${totalChecked} exact ${totalChecked === 1 ? 'spot' : 'spots'} checked` : 'One focused area at a time'}</span>
       </div>
 
-      <article className={`stop-card stop-card--${stop.kind ?? 'standard'}`}>
+      <article key={stop.id} className={`stop-card stop-card--${stop.kind ?? 'standard'}`}>
+        <div className="stop-card__heading">
+          <span className="stop-number"><small>Stop</small><strong>{search.currentIndex + 1}</strong></span>
+          <div><p className="kicker">Search this area only</p><h1 ref={headingRef} id="view-heading" tabIndex={-1}>{stop.title}</h1></div>
+        </div>
         {stop.reason && <p className="reason"><Icon name={stop.kind === 'home' ? 'pin' : ['history', 'learned'].includes(stop.kind ?? '') ? 'history' : stop.kind === 'safety' ? 'spark' : 'trail'} size={17} />{stop.reason}</p>}
-        <p className="kicker">Search this spot. Not the whole universe.</p>
-        <h1 id="view-heading" tabIndex={-1}>{stop.title}</h1>
         <p className="stop-card__instruction">{stop.instruction}</p>
 
+        <div className="spot-list__heading"><strong>Check these exact spots</strong><span aria-live="polite">{checked.length} of {stop.spots.length}</span></div>
         <div className="spot-list" role="group" aria-label={`Places to check at ${stop.title}`}>
           {stop.spots.map((spot) => {
             const isChecked = checked.includes(spot)
@@ -115,7 +125,7 @@ export function TrailView({ search, settings, onBack, onToggleSpot, onNext, onFo
 
       <div className="sticky-actions">
         <button className="button button--found" onClick={onFound}><Icon name="spark" size={20} /> Found it</button>
-        <button className="button button--primary" onClick={onNext}>Nothing here · next</button>
+        <button className="button button--primary" onClick={onNext}>{isLastStop ? 'Still missing · next steps' : 'Nothing here · next stop'}</button>
         <button className="button button--quiet" onClick={onCalm}>I need a reset</button>
       </div>
     </section>
