@@ -1,8 +1,10 @@
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
-// One continuous search story: phone/nightstand -> across the bed and behind the chooser card ->
-// remote on couch -> kitchen counter -> keys on entry table.
-const searchPath = 'M735 742C650 770 520 805 390 858C520 900 760 902 930 790C1000 724 1040 650 1018 548C1100 574 1192 612 1270 650C1240 560 1188 460 1150 368C1126 310 1104 266 1068 242'
+// Three deliberate legs. Each one ends on an exact checkpoint instead of relying on
+// percentage positions along one oversized path.
+const phoneToRemote = 'M735 742C650 770 555 792 470 830C610 872 790 800 920 666C965 620 996 580 1018 548'
+const remoteToKitchen = 'M1018 548C1096 558 1188 608 1270 650'
+const kitchenToKeys = 'M1270 650C1236 536 1196 424 1152 344C1124 294 1094 260 1068 242'
 
 export function HomeArtwork() {
   return (
@@ -25,7 +27,9 @@ export function HomeArtwork() {
           </filter>
         </defs>
 
-        <path className="home-artwork__search-guide" d={searchPath} pathLength="100" />
+        <path className="home-artwork__search-guide" d={phoneToRemote} />
+        <path className="home-artwork__search-guide" d={remoteToKitchen} />
+        <path className="home-artwork__search-guide" d={kitchenToKeys} />
 
         <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--remote" cx="1018" cy="548" r="38" />
         <circle className="home-artwork__miss-core home-artwork__miss-core--remote" cx="1018" cy="548" r="8.5" />
@@ -36,19 +40,13 @@ export function HomeArtwork() {
         <circle className="home-artwork__found-pulse" cx="1068" cy="242" r="44" />
         <circle className="home-artwork__found-core" cx="1068" cy="242" r="9" />
 
-        <g className="home-artwork__search-orb">
+        <g className="home-artwork__search-orb" transform="translate(735 742)">
           <circle className="home-artwork__orb-haze" r="46" />
           <circle className="home-artwork__orb-shell" r="18" />
           <circle className="home-artwork__orb-core" r="7.5" />
-          <animateMotion
-            dur="10.8s"
-            begin="0.35s"
-            fill="freeze"
-            path={searchPath}
-            keyPoints="0;0;0.48;0.48;0.67;0.67;0.78;0.78;1;1"
-            keyTimes="0;0.18;0.43;0.51;0.59;0.66;0.72;0.79;0.93;1"
-            calcMode="linear"
-          />
+          <animateMotion begin="2s" dur="2.6s" fill="freeze" path={phoneToRemote} calcMode="spline" keyTimes="0;1" keySplines=".22 .72 .22 1" />
+          <animateMotion begin="5.5s" dur="1.5s" fill="freeze" path={remoteToKitchen} calcMode="spline" keyTimes="0;1" keySplines=".22 .72 .22 1" />
+          <animateMotion begin="7.8s" dur="2s" fill="freeze" path={kitchenToKeys} calcMode="spline" keyTimes="0;1" keySplines=".22 .72 .22 1" />
         </g>
       </svg>
     </div>
