@@ -1,20 +1,9 @@
-/* FindTrail Home: smooth, deliberate checkpoint search played once. */
+/* FindTrail Home: the artwork owns the path; one orb simply brings it to life. */
 .home-artwork__trail { overflow: visible; }
-
-.home-artwork__search-guide {
-  fill: none;
-  stroke: rgba(255,239,185,.42);
-  stroke-width: 5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: url(#findtrail-orb-soft);
-  opacity: 0;
-  animation: findtrail-guide-once 10.4s ease-in-out .2s 1 both;
-}
 
 .home-artwork__search-orb {
   opacity: 0;
-  animation: findtrail-orb-visibility 10.4s ease-in-out .2s 1 both;
+  animation: findtrail-orb-visibility 8s ease-in-out .35s 1 both;
 }
 
 .home-artwork__orb-haze,
@@ -28,7 +17,7 @@
   fill: #efc66f;
   opacity: .62;
   filter: url(#findtrail-orb-haze);
-  animation: findtrail-orb-haze-state 10.4s ease-in-out .2s 1 both;
+  animation: findtrail-orb-haze-state 8s ease-in-out .35s 1 both;
 }
 
 .home-artwork__orb-shell {
@@ -36,168 +25,67 @@
   stroke: #c79343;
   stroke-width: 4;
   filter: drop-shadow(0 0 10px rgba(227,181,83,.9));
-  animation: findtrail-orb-shell-state 10.4s ease-in-out .2s 1 both;
+  animation: findtrail-orb-shell-state 8s ease-in-out .35s 1 both;
 }
 
 .home-artwork__orb-core {
   fill: #fffdf4;
   filter: drop-shadow(0 0 6px rgba(255,255,255,.98));
-  animation: findtrail-orb-core-state 10.4s ease-in-out .2s 1 both;
-}
-
-.home-artwork__miss-pulse,
-.home-artwork__miss-core,
-.home-artwork__found-pulse,
-.home-artwork__found-core {
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.home-artwork__miss-pulse { fill: #c55454; filter: url(#findtrail-orb-haze); }
-.home-artwork__miss-core { fill: #d75c57; filter: drop-shadow(0 0 10px rgba(178,53,53,.9)); }
-.home-artwork__miss-pulse--remote,
-.home-artwork__miss-core--remote { animation: findtrail-miss-remote 10.4s ease-in-out .2s 1 both; }
-.home-artwork__miss-pulse--kitchen,
-.home-artwork__miss-core--kitchen { animation: findtrail-miss-kitchen 10.4s ease-in-out .2s 1 both; }
-
-.home-artwork__found-pulse {
-  fill: #72ad70;
-  filter: url(#findtrail-orb-haze);
-  animation: findtrail-found-pulse 10.4s cubic-bezier(.2,.8,.2,1) .2s 1 both;
-}
-.home-artwork__found-core {
-  fill: #e7ffd5;
-  filter: drop-shadow(0 0 14px rgba(112,176,104,1));
-  animation: findtrail-found-core 10.4s cubic-bezier(.2,.8,.2,1) .2s 1 both;
-}
-
-@keyframes findtrail-guide-once {
-  0%, 14% { opacity: 0; }
-  20% { opacity: .18; }
-  40% { opacity: .34; }
-  82% { opacity: .3; }
-  94%, 100% { opacity: 0; }
+  animation: findtrail-orb-core-state 8s ease-in-out .35s 1 both;
 }
 
 @keyframes findtrail-orb-visibility {
   0% { opacity: 0; }
-  2% { opacity: .55; }
-  5%, 97% { opacity: 1; }
-  100% { opacity: 0; }
+  3% { opacity: .7; }
+  7%, 100% { opacity: 1; }
 }
 
-/* Small at the phone, two calm listening pulses, then neutral travel between exact stops. */
+/* Warm travel, two clean red checks, warm again, then green and a restrained bounce. */
 @keyframes findtrail-orb-shell-state {
-  0% { fill:#fff6d3; stroke:#c79343; transform:scale(.18); }
-  5% { transform:scale(.72); }
-  8% { transform:scale(1); }
-  11% { transform:scale(1.12); }
-  14% { transform:scale(.96); }
-  17% { transform:scale(1.12); }
-  19% { transform:scale(1); }
-
-  20%, 43% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
-  45%, 50% { fill:#e36a63; stroke:#a93e3e; transform:scale(1.16); }
-  53%, 66% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
-  68%, 73% { fill:#e36a63; stroke:#a93e3e; transform:scale(1.16); }
-  76%, 91% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
-  94%, 100% { fill:#b9dea6; stroke:#4f8b55; transform:scale(1.24); }
+  0%, 27% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
+  31%, 36% { fill:#e36a63; stroke:#a93e3e; transform:scale(1.16); }
+  40%, 58% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
+  62%, 67% { fill:#e36a63; stroke:#a93e3e; transform:scale(1.16); }
+  71%, 91% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
+  94% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(-7px) scale(1.25); }
+  96% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(3px) scale(1.08); }
+  98% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(-3px) scale(1.2); }
+  100% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(0) scale(1.14); }
 }
 
 @keyframes findtrail-orb-core-state {
-  0% { fill:#fffdf4; transform:scale(.18); }
-  8% { transform:scale(1); }
-  11% { transform:scale(1.2); }
-  14% { transform:scale(.94); }
-  17% { transform:scale(1.2); }
-  19% { transform:scale(1); }
-  45%, 50%, 68%, 73% { fill:#ffd3cf; }
-  53%, 66%, 76%, 91% { fill:#fffdf4; }
+  0%, 27% { fill:#fffdf4; transform:scale(1); }
+  31%, 36% { fill:#ffd3cf; transform:scale(1.16); }
+  40%, 58% { fill:#fffdf4; transform:scale(1); }
+  62%, 67% { fill:#ffd3cf; transform:scale(1.16); }
+  71%, 91% { fill:#fffdf4; transform:scale(1); }
   94% { fill:#efffdc; transform:translateY(-7px) scale(1.3); }
-  96% { transform:translateY(3px) scale(1.06); }
-  98% { transform:translateY(-3px) scale(1.2); }
+  96% { fill:#efffdc; transform:translateY(3px) scale(1.06); }
+  98% { fill:#efffdc; transform:translateY(-3px) scale(1.2); }
   100% { fill:#efffdc; transform:translateY(0) scale(1.14); }
 }
 
 @keyframes findtrail-orb-haze-state {
-  0% { fill:#efc66f; opacity:.24; transform:scale(.15); }
-  8% { opacity:.68; transform:scale(1); }
-  11% { opacity:.86; transform:scale(1.2); }
-  14% { opacity:.56; transform:scale(.96); }
-  17% { opacity:.86; transform:scale(1.2); }
-  19% { opacity:.62; transform:scale(1); }
-  45%, 50%, 68%, 73% { fill:#d94f4f; opacity:.88; transform:scale(1.22); }
-  53%, 66%, 76%, 91% { fill:#efc66f; opacity:.62; transform:scale(1); }
+  0%, 27% { fill:#efc66f; opacity:.62; transform:scale(1); }
+  31%, 36% { fill:#d94f4f; opacity:.88; transform:scale(1.22); }
+  40%, 58% { fill:#efc66f; opacity:.62; transform:scale(1); }
+  62%, 67% { fill:#d94f4f; opacity:.88; transform:scale(1.22); }
+  71%, 91% { fill:#efc66f; opacity:.62; transform:scale(1); }
   94%, 100% { fill:#6eae6d; opacity:.9; transform:scale(1.3); }
 }
 
-/* Pauses are timed to the exact ends of the three motion legs. */
-@keyframes findtrail-miss-remote {
-  0%, 43% { opacity:0; transform:scale(.45); }
-  45% { opacity:.8; transform:scale(.9); }
-  47% { opacity:1; transform:scale(1.12); }
-  50% { opacity:.18; transform:scale(1.42); }
-  53%, 100% { opacity:0; transform:scale(1.5); }
-}
-
-@keyframes findtrail-miss-kitchen {
-  0%, 66% { opacity:0; transform:scale(.45); }
-  68% { opacity:.8; transform:scale(.9); }
-  70% { opacity:1; transform:scale(1.12); }
-  73% { opacity:.18; transform:scale(1.42); }
-  76%, 100% { opacity:0; transform:scale(1.5); }
-}
-
-@keyframes findtrail-found-pulse {
-  0%, 91% { opacity:0; transform:scale(.45); }
-  94% { opacity:.52; transform:scale(.82); }
-  96% { opacity:1; transform:scale(1.16); }
-  98% { opacity:.58; transform:scale(1.48); }
-  100% { opacity:0; transform:scale(1.68); }
-}
-
-@keyframes findtrail-found-core {
-  0%, 91% { opacity:0; transform:scale(.7); }
-  94% { opacity:1; transform:scale(1); }
-  96% { opacity:1; transform:translateY(-8px) scale(1.22); }
-  97% { transform:translateY(3px) scale(.94); }
-  99% { transform:translateY(-3px) scale(1.1); }
-  100% { opacity:0; transform:translateY(0) scale(1); }
-}
-
-:root[data-motion="reduced"] .home-artwork__search-guide,
 :root[data-motion="reduced"] .home-artwork__search-orb,
 :root[data-motion="reduced"] .home-artwork__orb-haze,
 :root[data-motion="reduced"] .home-artwork__orb-shell,
-:root[data-motion="reduced"] .home-artwork__orb-core,
-:root[data-motion="reduced"] .home-artwork__miss-pulse,
-:root[data-motion="reduced"] .home-artwork__miss-core,
-:root[data-motion="reduced"] .home-artwork__found-pulse,
-:root[data-motion="reduced"] .home-artwork__found-core { animation:none!important; }
+:root[data-motion="reduced"] .home-artwork__orb-core { animation:none!important; }
 
-:root[data-motion="reduced"] .home-artwork__search-guide,
-:root[data-motion="reduced"] .home-artwork__miss-pulse,
-:root[data-motion="reduced"] .home-artwork__miss-core,
 :root[data-motion="reduced"] .home-artwork__search-orb { display:none; }
 
-:root[data-motion="reduced"] .home-artwork__found-core { opacity:.82; }
-
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion="full"]) .home-artwork__search-guide,
   :root:not([data-motion="full"]) .home-artwork__search-orb,
   :root:not([data-motion="full"]) .home-artwork__orb-haze,
   :root:not([data-motion="full"]) .home-artwork__orb-shell,
-  :root:not([data-motion="full"]) .home-artwork__orb-core,
-  :root:not([data-motion="full"]) .home-artwork__miss-pulse,
-  :root:not([data-motion="full"]) .home-artwork__miss-core,
-  :root:not([data-motion="full"]) .home-artwork__found-pulse,
-  :root:not([data-motion="full"]) .home-artwork__found-core { animation:none!important; }
+  :root:not([data-motion="full"]) .home-artwork__orb-core { animation:none!important; }
 
-  :root:not([data-motion="full"]) .home-artwork__search-guide,
-  :root:not([data-motion="full"]) .home-artwork__miss-pulse,
-  :root:not([data-motion="full"]) .home-artwork__miss-core,
   :root:not([data-motion="full"]) .home-artwork__search-orb { display:none; }
-
-  :root:not([data-motion="full"]) .home-artwork__found-core { opacity:.82; }
 }
