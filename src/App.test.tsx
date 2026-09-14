@@ -21,12 +21,15 @@ describe('FindTrail app', () => {
     expect(document.querySelector('.home-artwork__trail')).toHaveClass('is-settled')
   })
 
-  it('turns three clues into a focused trail', () => {
+  it('hands the selected item smoothly into a focused trail', async () => {
     render(<App />)
     expect(screen.getByText('Retrace with a plan')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'A clear path to finding what’s missing.' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /keys/i }))
-    fireEvent.click(screen.getByText('Car keys'))
+    const keysButton = screen.getByRole('button', { name: /keys/i })
+    fireEvent.click(keysButton)
+    expect(keysButton).toHaveClass('is-departing')
+    expect(screen.queryByText('Car keys')).not.toBeInTheDocument()
+    fireEvent.click(await screen.findByText('Car keys'))
     fireEvent.click(screen.getByText('At home'))
     fireEvent.click(screen.getByText('Came in or left'))
     expect(screen.getByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
@@ -65,10 +68,10 @@ describe('FindTrail app', () => {
     expect(screen.getByText(/start at entry tray/i)).toBeInTheDocument()
   })
 
-  it('returns to the same trail after a reset', () => {
+  it('returns to the same trail after a reset', async () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /keys/i }))
-    fireEvent.click(screen.getByText('Car keys'))
+    fireEvent.click(await screen.findByText('Car keys'))
     fireEvent.click(screen.getByText('At home'))
     fireEvent.click(screen.getByText('Came in or left'))
     fireEvent.click(screen.getByRole('button', { name: 'I need a reset' }))

@@ -338,6 +338,34 @@ interface HomeViewProps {
 function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, onStart, onResume, onDiscard, onOpenHistory }: HomeViewProps) {
   const latest = data.history[0]
   const pinnedItems = data.savedItems.filter((item) => item.itemId === 'other' && item.pinned)
+  const [departingItemId, setDepartingItemId] = useState<ItemId | null>(null)
+  const handoffTimer = useRef<number | null>(null)
+
+  useEffect(() => () => {
+    if (handoffTimer.current !== null) window.clearTimeout(handoffTimer.current)
+  }, [])
+
+  function chooseItem(itemId: ItemId) {
+    if (handoffTimer.current !== null) return
+    if (itemId === 'other') {
+      setCustomOpen(!customOpen)
+      return
+    }
+
+    const reduceMotion = data.settings.motion === 'reduced'
+      || (data.settings.motion === 'system' && (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false))
+    if (reduceMotion) {
+      onStart(itemId)
+      return
+    }
+
+    setDepartingItemId(itemId)
+    handoffTimer.current = window.setTimeout(() => {
+      handoffTimer.current = null
+      onStart(itemId)
+    }, 170)
+  }
+
   return (
     <section className={data.activeSearch ? 'view home-view home-view--active' : 'view home-view'} aria-labelledby="view-heading">
       <section className="home-hero">
@@ -376,13 +404,20 @@ function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, 
           {pinnedItems.map((item) => <button key={item.id} className="pinned-item" onClick={() => onStart('other', item.itemLabel)}><Icon name="pin" size={15} /><span>{item.itemLabel}</span></button>)}
         </div>}
         <div className="item-grid">
-          {ITEMS.map((item) => (
-            <button key={item.id} className={item.id === 'other' && customOpen ? 'item-button is-active' : 'item-button'} onClick={() => item.id === 'other' ? setCustomOpen(!customOpen) : onStart(item.id)} aria-haspopup={item.id === 'other' ? 'dialog' : undefined} aria-expanded={item.id === 'other' ? customOpen : undefined}>
-              <span className="item-button__icon"><Icon name={item.icon} size={23} /></span>
-              <strong>{item.label}</strong>
-              <small>{item.hint}</small>
-            </button>
-          ))}
+          {ITEMS.map((item) => {
+            const itemClass = [
+              'item-button',
+              item.id === 'other' && customOpen ? 'is-active' : '',
+              item.id === departingItemId ? 'is-departing' : '',
+            ].filter(Boolean).join(' ')
+            return (
+              <button key={item.id} className={itemClass} onClick={() => chooseItem(item.id)} aria-haspopup={item.id === 'other' ? 'dialog' : undefined} aria-expanded={item.id === 'other' ? customOpen : undefined}>
+                <span className="item-button__icon"><Icon name={item.icon} size={23} /></span>
+                <strong>{item.label}</strong>
+                <small>{item.hint}</small>
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -548,7 +583,7 @@ function SettingsView({ data, canInstall, backupStatus, onUpdate, onUpdateSavedI
         {backupStatus && <p className="backup-status" role="status">{backupStatus}</p>}
         <button className="button button--danger-outline" onClick={onClear} disabled={!data.history.length}>Clear found history</button>
       </div>
-      <footer className="version-note">FindTrail 2.2.1 · A clear path to finding what’s missing.</footer>
+      <footer className="version-note">FindTrail 2.2.2 · A clear path to finding what’s missing.</footer>
     </section>
   )
 }

@@ -1,4 +1,4 @@
-# FindTrail 2.2.1 QA report
+# FindTrail 2.2.2 QA report
 
 Run date: 2026-09-14
 
@@ -13,6 +13,7 @@ Run date: 2026-09-14
 | Home artwork optimization | Pass: 1536 × 1024 WebP, 132 KB |
 | Offline shell inclusion | Pass: versioned artwork is pre-cached |
 | Home motion regression | Pass: plays once per session and settles |
+| Item handoff regression | Pass: selected tile settles before the first clue appears |
 | Hosted GitHub Actions | Required before merge |
 
 ## Browser and resilience checks
@@ -25,6 +26,7 @@ Run date: 2026-09-14
 - Keyboard entry reaches the skip link first, then exposes visible focus on controls.
 - Reduced-motion preference suppresses both the breathing animation and Home guide.
 - The Home search guide uses brief, non-looping motion and does not replay after returning Home in the same session.
+- Item tiles use a tightened shadow and sage icon well while handing the selection into the first clue.
 - Active search survives reload.
 - Saving a found place adds history and promotes that location on the next matching search.
 - Saved home spots outrank learned guesses while urgent safety guidance remains first.
