@@ -4,8 +4,8 @@
 
 .home-artwork__search-guide {
   fill: none;
-  stroke: rgba(255, 244, 201, .5);
-  stroke-width: 6;
+  stroke: rgba(255, 239, 185, .64);
+  stroke-width: 7;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 10 14;
@@ -24,25 +24,26 @@
 .home-artwork__orb-core {
   transform-box: fill-box;
   transform-origin: center;
-  animation: findtrail-orb-state 8.8s ease-in-out .35s 1 both;
+  animation: findtrail-orb-scale 8.8s ease-in-out .35s 1 both;
 }
 
+/* Bigger, clearer orb. The warm edge keeps it visible even over the pale bedside fade. */
 .home-artwork__orb-haze {
-  fill: #f4d58d;
-  opacity: .42;
+  fill: #efc66f;
+  opacity: .66;
   filter: url(#findtrail-orb-haze);
 }
 
 .home-artwork__orb-shell {
-  fill: rgba(255, 247, 220, .9);
-  stroke: rgba(232, 199, 131, .92);
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 8px rgba(255, 231, 157, .82));
+  fill: rgba(255, 246, 211, .98);
+  stroke: #c79343;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 11px rgba(227, 181, 83, .96));
 }
 
 .home-artwork__orb-core {
   fill: #fffdf4;
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, .95));
+  filter: drop-shadow(0 0 7px rgba(255, 255, 255, 1));
 }
 
 .home-artwork__miss-pulse,
@@ -55,13 +56,13 @@
 }
 
 .home-artwork__miss-pulse {
-  fill: #c85f5f;
+  fill: #c55454;
   filter: url(#findtrail-orb-haze);
 }
 
 .home-artwork__miss-core {
-  fill: #d66f6a;
-  filter: drop-shadow(0 0 7px rgba(190, 72, 72, .75));
+  fill: #d75c57;
+  filter: drop-shadow(0 0 10px rgba(178, 53, 53, .92));
 }
 
 .home-artwork__miss-pulse--bed,
@@ -75,120 +76,77 @@
 }
 
 .home-artwork__found-pulse {
-  fill: #e8c783;
+  fill: #e4bd62;
   filter: url(#findtrail-orb-haze);
   animation: findtrail-found-pulse 8.8s cubic-bezier(.2,.8,.2,1) .35s 1 both;
 }
 
 .home-artwork__found-core {
-  fill: #f8e7a9;
-  filter: drop-shadow(0 0 9px rgba(232,199,131,.95));
+  fill: #fff0a8;
+  filter: drop-shadow(0 0 12px rgba(232,199,131,1));
   animation: findtrail-found-core 8.8s cubic-bezier(.2,.8,.2,1) .35s 1 both;
 }
 
 @keyframes findtrail-guide-once {
   0%, 4% { opacity: 0; stroke-dashoffset: 18; }
-  12% { opacity: .24; }
-  30% { opacity: .46; }
-  72% { opacity: .42; }
-  88% { opacity: .22; }
+  12% { opacity: .34; }
+  30% { opacity: .58; }
+  72% { opacity: .54; }
+  88% { opacity: .26; }
   100% { opacity: 0; stroke-dashoffset: -36; }
 }
 
 @keyframes findtrail-orb-visibility {
-  0%, 2% { opacity: 0; }
-  7%, 96% { opacity: 1; }
+  0% { opacity: 0; }
+  3% { opacity: .8; }
+  6%, 96% { opacity: 1; }
   100% { opacity: 0; }
 }
 
-@keyframes findtrail-orb-state {
-  0%, 9% {
-    fill: #fffdf4;
-    stroke: #e8c783;
-    transform: scale(.82);
-  }
-  13% {
-    fill: #d96f69;
-    stroke: #b84f4f;
-    transform: scale(1.08);
-  }
-  21% {
-    fill: #c85f5f;
-    stroke: #a94444;
-    transform: scale(.92);
-  }
-  28%, 48% {
-    fill: #fffdf4;
-    stroke: #e8c783;
-    transform: scale(1);
-  }
-  52% {
-    fill: #d96f69;
-    stroke: #b84f4f;
-    transform: scale(1.08);
-  }
-  59% {
-    fill: #c85f5f;
-    stroke: #a94444;
-    transform: scale(.92);
-  }
-  66%, 84% {
-    fill: #fffdf4;
-    stroke: #e8c783;
-    transform: scale(1);
-  }
-  87% {
-    fill: #f4dda0;
-    stroke: #d7b563;
-    transform: scale(1.18);
-  }
-  91% {
-    fill: #fff7d3;
-    stroke: #e8c783;
-    transform: scale(.88);
-  }
-  95% {
-    fill: #f5dfa2;
-    stroke: #d7b563;
-    transform: scale(1.2);
-  }
-  100% {
-    fill: #fff4c9;
-    stroke: #e8c783;
-    transform: scale(1);
-  }
+@keyframes findtrail-orb-scale {
+  0%, 9% { transform: scale(1); }
+  13% { transform: scale(1.16); }
+  20% { transform: scale(.96); }
+  28%, 48% { transform: scale(1); }
+  52% { transform: scale(1.16); }
+  59% { transform: scale(.96); }
+  66%, 84% { transform: scale(1); }
+  87% { transform: scale(1.22); }
+  91% { transform: scale(.92); }
+  95% { transform: scale(1.22); }
+  100% { transform: scale(1); }
 }
 
 @keyframes findtrail-miss-bed {
-  0%, 10% { opacity: 0; transform: scale(.45); }
-  14% { opacity: .7; transform: scale(.9); }
-  18% { opacity: .94; transform: scale(1.13); }
-  23% { opacity: .18; transform: scale(1.35); }
-  28%, 100% { opacity: 0; transform: scale(1.45); }
+  0%, 9% { opacity: 0; transform: scale(.45); }
+  13% { opacity: .82; transform: scale(.92); }
+  17% { opacity: 1; transform: scale(1.16); }
+  22% { opacity: .22; transform: scale(1.44); }
+  27%, 100% { opacity: 0; transform: scale(1.55); }
 }
 
 @keyframes findtrail-miss-kitchen {
-  0%, 49% { opacity: 0; transform: scale(.45); }
-  53% { opacity: .7; transform: scale(.9); }
-  57% { opacity: .94; transform: scale(1.13); }
-  62% { opacity: .18; transform: scale(1.35); }
-  67%, 100% { opacity: 0; transform: scale(1.45); }
+  0%, 48% { opacity: 0; transform: scale(.45); }
+  52% { opacity: .82; transform: scale(.92); }
+  56% { opacity: 1; transform: scale(1.16); }
+  61% { opacity: .22; transform: scale(1.44); }
+  66%, 100% { opacity: 0; transform: scale(1.55); }
 }
 
 @keyframes findtrail-found-pulse {
-  0%, 84% { opacity: 0; transform: scale(.45); }
-  88% { opacity: .34; transform: scale(.8); }
-  91% { opacity: .95; transform: scale(1.12); }
-  95% { opacity: .46; transform: scale(1.38); }
-  100% { opacity: 0; transform: scale(1.58); }
+  0%, 83% { opacity: 0; transform: scale(.45); }
+  87% { opacity: .46; transform: scale(.82); }
+  90% { opacity: 1; transform: scale(1.16); }
+  94% { opacity: .54; transform: scale(1.46); }
+  100% { opacity: 0; transform: scale(1.68); }
 }
 
 @keyframes findtrail-found-core {
-  0%, 84% { opacity: 0; transform: scale(.7); }
-  88% { opacity: .86; transform: scale(1); }
-  91% { opacity: 1; transform: translateY(-4px) scale(1.16); }
-  94% { opacity: 1; transform: translateY(2px) scale(.94); }
-  97% { opacity: .94; transform: translateY(-2px) scale(1.08); }
+  0%, 83% { opacity: 0; transform: scale(.7); }
+  87% { opacity: .92; transform: scale(1); }
+  90% { opacity: 1; transform: translateY(-7px) scale(1.22); }
+  93% { opacity: 1; transform: translateY(3px) scale(.94); }
+  96% { opacity: .96; transform: translateY(-3px) scale(1.1); }
   100% { opacity: 0; transform: translateY(0) scale(1); }
 }
 
