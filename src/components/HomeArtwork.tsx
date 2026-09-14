@@ -1,6 +1,6 @@
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
-const trailPath = 'M1008 1080C914 974 860 884 892 804c18-46 64-65 104-92 68-46 129-93 168-157 41-67 56-134 22-183-30-43-104-54-178-94-70-38-108-82-88-126 18-39 67-58 128-83 44-18 72-40 84-69'
+const trailPath = 'M1008 1080C914 974 860 884 892 804c18-46 64-65 104-92 68-46 129-93 168-157 41-67 56-134 22-183C1158 327 1118 298 1060 300'
 
 export function HomeArtwork() {
   return (
@@ -32,6 +32,8 @@ export function HomeArtwork() {
         <path className="home-artwork__flow-body" pathLength="100" d={trailPath} />
         <path className="home-artwork__flow-core" pathLength="100" d={trailPath} />
         <path className="home-artwork__flow-shimmer" pathLength="100" d={trailPath} />
+        <circle className="home-artwork__arrival-haze" cx="1060" cy="300" r="22" />
+        <circle className="home-artwork__arrival-dot" cx="1060" cy="300" r="4.5" />
       </svg>
     </div>
   )
