@@ -1,6 +1,6 @@
-# FindTrail 2.2 QA report
+# FindTrail 2.2.1 QA report
 
-Run date: 2026-09-13
+Run date: 2026-09-14
 
 ## Automated release checks
 
@@ -12,6 +12,7 @@ Run date: 2026-09-13
 | Production dependency audit | 0 vulnerabilities |
 | Home artwork optimization | Pass: 1536 × 1024 WebP, 132 KB |
 | Offline shell inclusion | Pass: versioned artwork is pre-cached |
+| Home motion regression | Pass: plays once per session and settles |
 | Hosted GitHub Actions | Required before merge |
 
 ## Browser and resilience checks
@@ -22,7 +23,8 @@ Run date: 2026-09-13
 - Clue, trail, found, settings, breathing reset, pinned-item home, saved-home trail, and item-specific ending inspected at 412 × 915.
 - 200% text enlargement reflows without horizontal overflow or lost controls.
 - Keyboard entry reaches the skip link first, then exposes visible focus on controls.
-- Reduced-motion preference suppresses the breathing animation.
+- Reduced-motion preference suppresses both the breathing animation and Home guide.
+- The Home search guide uses brief, non-looping motion and does not replay after returning Home in the same session.
 - Active search survives reload.
 - Saving a found place adds history and promotes that location on the next matching search.
 - Saved home spots outrank learned guesses while urgent safety guidance remains first.

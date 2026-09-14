@@ -1,11 +1,18 @@
-/* FindTrail Home: one orb stays inside the artwork and follows the illustrated trail. */
+/* FindTrail Home: one calm demonstration, then the artwork rests. */
 .home-artwork__trail {
   overflow: hidden;
 }
 
 .home-artwork__search-orb {
   opacity: 0;
-  animation: findtrail-orb-visibility 8s ease-in-out .35s 1 both;
+}
+
+.home-artwork__trail.is-settled .home-artwork__search-orb {
+  display: none;
+}
+
+.home-artwork__trail.is-playing .home-artwork__search-orb {
+  animation: findtrail-orb-visibility 6.2s ease-in-out .3s 1 both;
 }
 
 .home-artwork__orb-haze,
@@ -16,99 +23,80 @@
 }
 
 .home-artwork__orb-haze {
-  fill: #d94f4f;
-  opacity: .72;
+  fill: #efc66f;
+  opacity: .52;
   filter: url(#findtrail-orb-haze);
-  animation: findtrail-orb-haze-state 8s ease-in-out .35s 1 both;
 }
 
 .home-artwork__orb-shell {
-  fill: #e36a63;
-  stroke: #a93e3e;
-  stroke-width: 4;
-  filter: drop-shadow(0 0 10px rgba(178,53,53,.72));
-  animation: findtrail-orb-shell-state 8s ease-in-out .35s 1 both;
+  fill: #fff6d3;
+  stroke: #c79343;
+  stroke-width: 3.5;
+  filter: drop-shadow(0 0 9px rgba(227,181,83,.75));
 }
 
 .home-artwork__orb-core {
-  fill: #ffd3cf;
-  filter: drop-shadow(0 0 6px rgba(255,214,210,.9));
-  animation: findtrail-orb-core-state 8s ease-in-out .35s 1 both;
+  fill: #fffdf4;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,.94));
+}
+
+.home-artwork__trail.is-playing .home-artwork__orb-haze {
+  animation: findtrail-orb-haze-state 6.2s ease-in-out .3s 1 both;
+}
+
+.home-artwork__trail.is-playing .home-artwork__orb-shell {
+  animation: findtrail-orb-shell-state 6.2s ease-in-out .3s 1 both;
+}
+
+.home-artwork__trail.is-playing .home-artwork__orb-core {
+  animation: findtrail-orb-core-state 6.2s ease-in-out .3s 1 both;
 }
 
 @keyframes findtrail-orb-visibility {
   0% { opacity: 0; }
-  4% { opacity: .65; }
-  8%, 100% { opacity: 1; }
+  3% { opacity: .55; }
+  7%, 96% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-/* Red softly fades in and out during the search. At the keys it switches to green and blinks. */
+/* Warm while moving, two brief clay checks, then one green arrival. */
 @keyframes findtrail-orb-shell-state {
-  0% { fill:#e36a63; stroke:#a93e3e; opacity:.45; transform:scale(.92); }
-  10% { opacity:1; transform:scale(1.05); }
-  20% { opacity:.48; transform:scale(.94); }
-  30% { opacity:1; transform:scale(1.05); }
-  40% { opacity:.48; transform:scale(.94); }
-  50% { opacity:1; transform:scale(1.05); }
-  60% { opacity:.48; transform:scale(.94); }
-  70% { opacity:1; transform:scale(1.05); }
-  80% { opacity:.48; transform:scale(.94); }
-  90% { fill:#e36a63; stroke:#a93e3e; opacity:1; transform:scale(1); }
-  93% { fill:#b9dea6; stroke:#4f8b55; opacity:1; transform:scale(1.18); }
-  95% { opacity:.35; transform:scale(1.02); }
-  97% { opacity:1; transform:scale(1.2); }
-  99% { opacity:.42; transform:scale(1.05); }
-  100% { fill:#b9dea6; stroke:#4f8b55; opacity:1; transform:scale(1.16); }
+  0% { fill:#fff6d3; stroke:#c79343; transform:scale(.2); }
+  6% { transform:scale(.8); }
+  9%, 41% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
+  43%, 47% { fill:#e98a66; stroke:#a9563f; transform:scale(1.12); }
+  50%, 66% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
+  68%, 72% { fill:#e98a66; stroke:#a9563f; transform:scale(1.12); }
+  75%, 94% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
+  96% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(-5px) scale(1.2); }
+  98% { transform:translateY(2px) scale(1.04); }
+  100% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(0) scale(1.12); }
 }
 
 @keyframes findtrail-orb-core-state {
-  0% { fill:#ffd3cf; opacity:.55; transform:scale(.92); }
-  10% { opacity:1; transform:scale(1.08); }
-  20% { opacity:.55; transform:scale(.94); }
-  30% { opacity:1; transform:scale(1.08); }
-  40% { opacity:.55; transform:scale(.94); }
-  50% { opacity:1; transform:scale(1.08); }
-  60% { opacity:.55; transform:scale(.94); }
-  70% { opacity:1; transform:scale(1.08); }
-  80% { opacity:.55; transform:scale(.94); }
-  90% { fill:#ffd3cf; opacity:1; transform:scale(1); }
-  93% { fill:#efffdc; opacity:1; transform:scale(1.22); }
-  95% { opacity:.3; transform:scale(1); }
-  97% { opacity:1; transform:scale(1.25); }
-  99% { opacity:.38; transform:scale(1.04); }
-  100% { fill:#efffdc; opacity:1; transform:scale(1.18); }
+  0% { fill:#fffdf4; transform:scale(.2); }
+  9%, 41% { fill:#fffdf4; transform:scale(1); }
+  43%, 47% { fill:#ffe0d1; transform:scale(1.12); }
+  50%, 66% { fill:#fffdf4; transform:scale(1); }
+  68%, 72% { fill:#ffe0d1; transform:scale(1.12); }
+  75%, 94% { fill:#fffdf4; transform:scale(1); }
+  96% { fill:#efffdc; transform:translateY(-5px) scale(1.24); }
+  98% { transform:translateY(2px) scale(1.02); }
+  100% { fill:#efffdc; transform:translateY(0) scale(1.12); }
 }
 
 @keyframes findtrail-orb-haze-state {
-  0% { fill:#d94f4f; opacity:.28; transform:scale(.9); }
-  10% { opacity:.82; transform:scale(1.12); }
-  20% { opacity:.3; transform:scale(.92); }
-  30% { opacity:.82; transform:scale(1.12); }
-  40% { opacity:.3; transform:scale(.92); }
-  50% { opacity:.82; transform:scale(1.12); }
-  60% { opacity:.3; transform:scale(.92); }
-  70% { opacity:.82; transform:scale(1.12); }
-  80% { opacity:.3; transform:scale(.92); }
-  90% { fill:#d94f4f; opacity:.78; transform:scale(1.08); }
-  93% { fill:#6eae6d; opacity:.9; transform:scale(1.28); }
-  95% { opacity:.28; transform:scale(1.06); }
-  97% { opacity:.92; transform:scale(1.3); }
-  99% { opacity:.32; transform:scale(1.08); }
-  100% { fill:#6eae6d; opacity:.92; transform:scale(1.24); }
+  0% { fill:#efc66f; opacity:.16; transform:scale(.2); }
+  9%, 41% { fill:#efc66f; opacity:.52; transform:scale(1); }
+  43%, 47% { fill:#e98a66; opacity:.64; transform:scale(1.12); }
+  50%, 66% { fill:#efc66f; opacity:.52; transform:scale(1); }
+  68%, 72% { fill:#e98a66; opacity:.64; transform:scale(1.12); }
+  75%, 94% { fill:#efc66f; opacity:.52; transform:scale(1); }
+  96%, 100% { fill:#6eae6d; opacity:.76; transform:scale(1.22); }
 }
-
-:root[data-motion="reduced"] .home-artwork__search-orb,
-:root[data-motion="reduced"] .home-artwork__orb-haze,
-:root[data-motion="reduced"] .home-artwork__orb-shell,
-:root[data-motion="reduced"] .home-artwork__orb-core { animation:none!important; }
 
 :root[data-motion="reduced"] .home-artwork__search-orb { display:none; }
 
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion="full"]) .home-artwork__search-orb,
-  :root:not([data-motion="full"]) .home-artwork__orb-haze,
-  :root:not([data-motion="full"]) .home-artwork__orb-shell,
-  :root:not([data-motion="full"]) .home-artwork__orb-core { animation:none!important; }
-
   :root:not([data-motion="full"]) .home-artwork__search-orb { display:none; }
 }
