@@ -1,5 +1,7 @@
-/* FindTrail Home: the artwork owns the path; one orb simply brings it to life. */
-.home-artwork__trail { overflow: visible; }
+/* FindTrail Home: one orb stays inside the artwork and follows the illustrated trail. */
+.home-artwork__trail {
+  overflow: hidden;
+}
 
 .home-artwork__search-orb {
   opacity: 0;
@@ -14,64 +16,85 @@
 }
 
 .home-artwork__orb-haze {
-  fill: #efc66f;
-  opacity: .62;
+  fill: #d94f4f;
+  opacity: .72;
   filter: url(#findtrail-orb-haze);
   animation: findtrail-orb-haze-state 8s ease-in-out .35s 1 both;
 }
 
 .home-artwork__orb-shell {
-  fill: rgba(255,246,211,.98);
-  stroke: #c79343;
+  fill: #e36a63;
+  stroke: #a93e3e;
   stroke-width: 4;
-  filter: drop-shadow(0 0 10px rgba(227,181,83,.9));
+  filter: drop-shadow(0 0 10px rgba(178,53,53,.72));
   animation: findtrail-orb-shell-state 8s ease-in-out .35s 1 both;
 }
 
 .home-artwork__orb-core {
-  fill: #fffdf4;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,.98));
+  fill: #ffd3cf;
+  filter: drop-shadow(0 0 6px rgba(255,214,210,.9));
   animation: findtrail-orb-core-state 8s ease-in-out .35s 1 both;
 }
 
 @keyframes findtrail-orb-visibility {
   0% { opacity: 0; }
-  3% { opacity: .7; }
-  7%, 100% { opacity: 1; }
+  4% { opacity: .65; }
+  8%, 100% { opacity: 1; }
 }
 
-/* Warm travel, two clean red checks, warm again, then green and a restrained bounce. */
+/* Red softly fades in and out during the search. At the keys it switches to green and blinks. */
 @keyframes findtrail-orb-shell-state {
-  0%, 27% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
-  31%, 36% { fill:#e36a63; stroke:#a93e3e; transform:scale(1.16); }
-  40%, 58% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
-  62%, 67% { fill:#e36a63; stroke:#a93e3e; transform:scale(1.16); }
-  71%, 91% { fill:#fff6d3; stroke:#c79343; transform:scale(1); }
-  94% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(-7px) scale(1.25); }
-  96% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(3px) scale(1.08); }
-  98% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(-3px) scale(1.2); }
-  100% { fill:#b9dea6; stroke:#4f8b55; transform:translateY(0) scale(1.14); }
+  0% { fill:#e36a63; stroke:#a93e3e; opacity:.45; transform:scale(.92); }
+  10% { opacity:1; transform:scale(1.05); }
+  20% { opacity:.48; transform:scale(.94); }
+  30% { opacity:1; transform:scale(1.05); }
+  40% { opacity:.48; transform:scale(.94); }
+  50% { opacity:1; transform:scale(1.05); }
+  60% { opacity:.48; transform:scale(.94); }
+  70% { opacity:1; transform:scale(1.05); }
+  80% { opacity:.48; transform:scale(.94); }
+  90% { fill:#e36a63; stroke:#a93e3e; opacity:1; transform:scale(1); }
+  93% { fill:#b9dea6; stroke:#4f8b55; opacity:1; transform:scale(1.18); }
+  95% { opacity:.35; transform:scale(1.02); }
+  97% { opacity:1; transform:scale(1.2); }
+  99% { opacity:.42; transform:scale(1.05); }
+  100% { fill:#b9dea6; stroke:#4f8b55; opacity:1; transform:scale(1.16); }
 }
 
 @keyframes findtrail-orb-core-state {
-  0%, 27% { fill:#fffdf4; transform:scale(1); }
-  31%, 36% { fill:#ffd3cf; transform:scale(1.16); }
-  40%, 58% { fill:#fffdf4; transform:scale(1); }
-  62%, 67% { fill:#ffd3cf; transform:scale(1.16); }
-  71%, 91% { fill:#fffdf4; transform:scale(1); }
-  94% { fill:#efffdc; transform:translateY(-7px) scale(1.3); }
-  96% { fill:#efffdc; transform:translateY(3px) scale(1.06); }
-  98% { fill:#efffdc; transform:translateY(-3px) scale(1.2); }
-  100% { fill:#efffdc; transform:translateY(0) scale(1.14); }
+  0% { fill:#ffd3cf; opacity:.55; transform:scale(.92); }
+  10% { opacity:1; transform:scale(1.08); }
+  20% { opacity:.55; transform:scale(.94); }
+  30% { opacity:1; transform:scale(1.08); }
+  40% { opacity:.55; transform:scale(.94); }
+  50% { opacity:1; transform:scale(1.08); }
+  60% { opacity:.55; transform:scale(.94); }
+  70% { opacity:1; transform:scale(1.08); }
+  80% { opacity:.55; transform:scale(.94); }
+  90% { fill:#ffd3cf; opacity:1; transform:scale(1); }
+  93% { fill:#efffdc; opacity:1; transform:scale(1.22); }
+  95% { opacity:.3; transform:scale(1); }
+  97% { opacity:1; transform:scale(1.25); }
+  99% { opacity:.38; transform:scale(1.04); }
+  100% { fill:#efffdc; opacity:1; transform:scale(1.18); }
 }
 
 @keyframes findtrail-orb-haze-state {
-  0%, 27% { fill:#efc66f; opacity:.62; transform:scale(1); }
-  31%, 36% { fill:#d94f4f; opacity:.88; transform:scale(1.22); }
-  40%, 58% { fill:#efc66f; opacity:.62; transform:scale(1); }
-  62%, 67% { fill:#d94f4f; opacity:.88; transform:scale(1.22); }
-  71%, 91% { fill:#efc66f; opacity:.62; transform:scale(1); }
-  94%, 100% { fill:#6eae6d; opacity:.9; transform:scale(1.3); }
+  0% { fill:#d94f4f; opacity:.28; transform:scale(.9); }
+  10% { opacity:.82; transform:scale(1.12); }
+  20% { opacity:.3; transform:scale(.92); }
+  30% { opacity:.82; transform:scale(1.12); }
+  40% { opacity:.3; transform:scale(.92); }
+  50% { opacity:.82; transform:scale(1.12); }
+  60% { opacity:.3; transform:scale(.92); }
+  70% { opacity:.82; transform:scale(1.12); }
+  80% { opacity:.3; transform:scale(.92); }
+  90% { fill:#d94f4f; opacity:.78; transform:scale(1.08); }
+  93% { fill:#6eae6d; opacity:.9; transform:scale(1.28); }
+  95% { opacity:.28; transform:scale(1.06); }
+  97% { opacity:.92; transform:scale(1.3); }
+  99% { opacity:.32; transform:scale(1.08); }
+  100% { fill:#6eae6d; opacity:.92; transform:scale(1.24); }
 }
 
 :root[data-motion="reduced"] .home-artwork__search-orb,
