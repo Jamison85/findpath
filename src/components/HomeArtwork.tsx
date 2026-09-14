@@ -40,10 +40,11 @@ export function HomeArtwork() {
         <circle className="home-artwork__found-pulse" cx="1068" cy="242" r="44" />
         <circle className="home-artwork__found-core" cx="1068" cy="242" r="9" />
 
-        <g className="home-artwork__search-orb" transform="translate(735 742)">
+        <g className="home-artwork__search-orb">
           <circle className="home-artwork__orb-haze" r="46" />
           <circle className="home-artwork__orb-shell" r="18" />
           <circle className="home-artwork__orb-core" r="7.5" />
+          <animateMotion begin="0s" dur="2s" fill="freeze" path="M735 742L735 742" />
           <animateMotion begin="2s" dur="2.6s" fill="freeze" path={phoneToRemote} calcMode="spline" keyTimes="0;1" keySplines=".22 .72 .22 1" />
           <animateMotion begin="5.5s" dur="1.5s" fill="freeze" path={remoteToKitchen} calcMode="spline" keyTimes="0;1" keySplines=".22 .72 .22 1" />
           <animateMotion begin="7.8s" dur="2s" fill="freeze" path={kitchenToKeys} calcMode="spline" keyTimes="0;1" keySplines=".22 .72 .22 1" />
