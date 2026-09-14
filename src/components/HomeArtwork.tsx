@@ -1,6 +1,8 @@
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
-const searchPath = 'M650 760C760 742 915 728 1070 748C1170 760 1260 774 1320 748C1280 650 1210 560 1178 478C1146 396 1138 336 1046 298'
+// Search stops are anchored to the visible tabletop surfaces in the Home artwork:
+// bedside table -> kitchen counter by the stool -> keys on the entry table.
+const searchPath = 'M650 748C760 730 930 688 1110 668C1184 660 1240 658 1270 650C1240 560 1188 460 1150 368C1126 310 1104 266 1068 242'
 
 export function HomeArtwork() {
   return (
@@ -16,34 +18,34 @@ export function HomeArtwork() {
       <svg className="home-artwork__trail" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <defs>
           <filter id="findtrail-orb-haze" x="-120%" y="-120%" width="340%" height="340%">
-            <feGaussianBlur stdDeviation="12" />
+            <feGaussianBlur stdDeviation="14" />
           </filter>
           <filter id="findtrail-orb-soft" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="3.5" />
+            <feGaussianBlur stdDeviation="4" />
           </filter>
         </defs>
 
         <path className="home-artwork__search-guide" d={searchPath} pathLength="100" />
 
-        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--bed" cx="650" cy="760" r="27" />
-        <circle className="home-artwork__miss-core home-artwork__miss-core--bed" cx="650" cy="760" r="6" />
+        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--bed" cx="650" cy="748" r="38" />
+        <circle className="home-artwork__miss-core home-artwork__miss-core--bed" cx="650" cy="748" r="8.5" />
 
-        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--kitchen" cx="1320" cy="748" r="27" />
-        <circle className="home-artwork__miss-core home-artwork__miss-core--kitchen" cx="1320" cy="748" r="6" />
+        <circle className="home-artwork__miss-pulse home-artwork__miss-pulse--kitchen" cx="1270" cy="650" r="38" />
+        <circle className="home-artwork__miss-core home-artwork__miss-core--kitchen" cx="1270" cy="650" r="8.5" />
 
-        <circle className="home-artwork__found-pulse" cx="1046" cy="298" r="31" />
-        <circle className="home-artwork__found-core" cx="1046" cy="298" r="6.5" />
+        <circle className="home-artwork__found-pulse" cx="1068" cy="242" r="44" />
+        <circle className="home-artwork__found-core" cx="1068" cy="242" r="9" />
 
         <g className="home-artwork__search-orb">
-          <circle className="home-artwork__orb-haze" r="30" />
-          <circle className="home-artwork__orb-shell" r="11" />
-          <circle className="home-artwork__orb-core" r="4.8" />
+          <circle className="home-artwork__orb-haze" r="46" />
+          <circle className="home-artwork__orb-shell" r="18" />
+          <circle className="home-artwork__orb-core" r="7.5" />
           <animateMotion
             dur="8.8s"
             begin="0.35s"
             fill="freeze"
             path={searchPath}
-            keyPoints="0;0;0.58;0.58;1;1"
+            keyPoints="0;0;0.61;0.61;1;1"
             keyTimes="0;0.22;0.47;0.59;0.86;1"
             calcMode="linear"
           />
