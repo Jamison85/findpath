@@ -1,102 +1,135 @@
-/* Findtrail Home clue language: scattered memory glimmers instead of a literal route. */
+/* Findtrail Home: begin clean, then let the memory trail sweep itself across the scene. */
 
 .home-artwork__trail { overflow: visible; }
 
-.home-artwork__clue {
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: findtrail-clue-appear 7.2s ease-in-out infinite;
-}
-
-.home-artwork__clue--1 { animation-delay: 0s; }
-.home-artwork__clue--2 { animation-delay: 1.05s; }
-.home-artwork__clue--3 { animation-delay: 2.1s; }
-.home-artwork__clue--4 { animation-delay: 3.15s; }
-.home-artwork__clue--5 { animation-delay: 4.2s; }
-
-.home-artwork__clue-haze {
-  fill: #f4d58d;
-  opacity: .24;
-  filter: url(#findtrail-clue-haze);
-}
-
-.home-artwork__clue-haze--found { fill: #fff0ad; opacity: .36; }
-
-.home-artwork__clue-streak {
+.home-artwork__trail .home-artwork__flow-haze,
+.home-artwork__trail .home-artwork__flow-body,
+.home-artwork__trail .home-artwork__flow-core,
+.home-artwork__trail .home-artwork__flow-shimmer {
   fill: none;
-  stroke: #fff1bd;
-  stroke-width: 4;
   stroke-linecap: round;
-  opacity: .66;
-  filter: url(#findtrail-clue-soft);
-  stroke-dasharray: 8 10 18 13;
-  animation: findtrail-clue-drift 2.8s ease-in-out infinite alternate;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
 }
 
-.home-artwork__clue-spark {
-  fill: #fffdf2;
-  filter: drop-shadow(0 0 7px rgba(255,235,166,.95));
-  animation: findtrail-spark 1.8s ease-in-out infinite;
+.home-artwork__trail .home-artwork__flow-haze {
+  stroke: #f1d28a;
+  stroke-width: 30;
+  opacity: 0;
+  filter: url(#findtrail-flow-haze);
+  animation: findtrail-flow-reveal 8.4s cubic-bezier(.2,.72,.2,1) infinite;
 }
 
-.home-artwork__clue-dust {
-  fill: #fff5cc;
-  opacity: .62;
-  filter: drop-shadow(0 0 4px rgba(255,239,187,.8));
-  animation: findtrail-dust 3.2s ease-in-out infinite alternate;
+.home-artwork__trail .home-artwork__flow-body {
+  stroke: url(#findtrail-flow-gradient);
+  stroke-width: 10;
+  opacity: 0;
+  filter: url(#findtrail-flow-soft);
+  animation: findtrail-flow-reveal 8.4s cubic-bezier(.2,.72,.2,1) infinite;
 }
 
-.home-artwork__clue-found {
-  fill: #fffdf0;
-  stroke: rgba(232,199,131,.72);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 11px rgba(255,226,139,.95));
-  animation: findtrail-found 2.4s ease-in-out infinite;
+.home-artwork__trail .home-artwork__flow-core {
+  stroke: #fff2bd;
+  stroke-width: 3.6;
+  opacity: 0;
+  filter: drop-shadow(0 0 5px rgba(255,235,166,.72));
+  animation: findtrail-flow-reveal 8.4s cubic-bezier(.2,.72,.2,1) infinite;
 }
 
-@keyframes findtrail-clue-appear {
-  0%, 7% { opacity: 0; }
-  14% { opacity: .95; }
-  27% { opacity: .82; }
-  39%, 100% { opacity: 0; }
+.home-artwork__trail .home-artwork__flow-shimmer {
+  stroke: #fffdf4;
+  stroke-width: 5;
+  opacity: 0;
+  filter: url(#findtrail-flow-soft);
+  stroke-dasharray: 5 95;
+  stroke-dashoffset: 105;
+  animation: findtrail-flow-head 8.4s linear infinite;
 }
 
-@keyframes findtrail-clue-drift {
-  from { transform: translate(-4px, 5px); opacity: .28; }
-  to { transform: translate(7px, -7px); opacity: .72; }
+@keyframes findtrail-flow-reveal {
+  0%, 9% {
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  13% {
+    opacity: .22;
+  }
+  20% {
+    opacity: .92;
+  }
+  62% {
+    stroke-dashoffset: 0;
+    opacity: .94;
+  }
+  74% {
+    stroke-dashoffset: 0;
+    opacity: .82;
+  }
+  88%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
 }
 
-@keyframes findtrail-spark {
-  0%, 100% { transform: scale(.7); opacity: .45; }
-  48% { transform: scale(1.3); opacity: 1; }
+@keyframes findtrail-flow-head {
+  0%, 9% {
+    stroke-dashoffset: 105;
+    opacity: 0;
+  }
+  14% {
+    opacity: .25;
+  }
+  22% {
+    opacity: .92;
+  }
+  62% {
+    stroke-dashoffset: 0;
+    opacity: .9;
+  }
+  68% {
+    opacity: .34;
+  }
+  76%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
 }
 
-@keyframes findtrail-dust {
-  from { transform: translate(0, 3px); opacity: .22; }
-  to { transform: translate(8px, -9px); opacity: .72; }
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-haze,
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-body,
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-core,
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-shimmer {
+  animation: none !important;
 }
 
-@keyframes findtrail-found {
-  0%, 100% { transform: scale(.8); opacity: .58; }
-  50% { transform: scale(1.25); opacity: 1; }
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-body,
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-core {
+  stroke-dashoffset: 0;
+  opacity: .72;
 }
 
-:root[data-motion="reduced"] .home-artwork__clue,
-:root[data-motion="reduced"] .home-artwork__clue-streak,
-:root[data-motion="reduced"] .home-artwork__clue-spark,
-:root[data-motion="reduced"] .home-artwork__clue-dust,
-:root[data-motion="reduced"] .home-artwork__clue-found { animation: none !important; }
-
-:root[data-motion="reduced"] .home-artwork__clue { opacity: .48; }
-:root[data-motion="reduced"] .home-artwork__clue--5 { opacity: .8; }
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-haze,
+:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-shimmer {
+  display: none;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion="full"]) .home-artwork__clue,
-  :root:not([data-motion="full"]) .home-artwork__clue-streak,
-  :root:not([data-motion="full"]) .home-artwork__clue-spark,
-  :root:not([data-motion="full"]) .home-artwork__clue-dust,
-  :root:not([data-motion="full"]) .home-artwork__clue-found { animation: none !important; }
-  :root:not([data-motion="full"]) .home-artwork__clue { opacity: .48; }
-  :root:not([data-motion="full"]) .home-artwork__clue--5 { opacity: .8; }
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-haze,
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-body,
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-core,
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-shimmer {
+    animation: none !important;
+  }
+
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-body,
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-core {
+    stroke-dashoffset: 0;
+    opacity: .72;
+  }
+
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-haze,
+  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-shimmer {
+    display: none;
+  }
 }
