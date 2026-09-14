@@ -1,184 +1,241 @@
-/* Findtrail Home: one wispy memory ribbon follows the established trail shape and lands on the keys. */
+/* FindTrail Home: the artwork demonstrates the search pattern once, then rests. */
 
 .home-artwork__trail { overflow: visible; }
 
-.home-artwork__trail .home-artwork__flow-haze,
-.home-artwork__trail .home-artwork__flow-body,
-.home-artwork__trail .home-artwork__flow-core,
-.home-artwork__trail .home-artwork__flow-shimmer {
+.home-artwork__search-guide {
   fill: none;
+  stroke: rgba(255, 244, 201, .5);
+  stroke-width: 6;
   stroke-linecap: round;
   stroke-linejoin: round;
+  stroke-dasharray: 10 14;
+  filter: url(#findtrail-orb-soft);
   opacity: 0;
+  animation: findtrail-guide-once 8.8s ease-in-out .35s 1 both;
 }
 
-/* Keep the ribbon clearly visible, but still airy rather than a solid painted line. */
-.home-artwork__trail .home-artwork__flow-haze {
-  stroke: #f1d28a;
-  stroke-width: 34;
-  filter: url(#findtrail-flow-haze);
-  stroke-dasharray: 29 71;
-  stroke-dashoffset: 30;
-  animation: findtrail-ribbon-travel 7s ease-in-out 1 both;
+.home-artwork__search-orb {
+  opacity: 0;
+  animation: findtrail-orb-visibility 8.8s ease-in-out .35s 1 both;
 }
 
-.home-artwork__trail .home-artwork__flow-body {
-  stroke: url(#findtrail-flow-gradient);
-  stroke-width: 12;
-  filter: url(#findtrail-flow-soft);
-  stroke-dasharray: 27 73;
-  stroke-dashoffset: 28;
-  animation: findtrail-ribbon-travel 7s ease-in-out 1 both;
-}
-
-.home-artwork__trail .home-artwork__flow-core {
-  stroke: #fff2bd;
-  stroke-width: 4.2;
-  filter: drop-shadow(0 0 6px rgba(255,235,166,.82));
-  stroke-dasharray: 23 77;
-  stroke-dashoffset: 24;
-  animation: findtrail-ribbon-travel 7s ease-in-out 1 both;
-}
-
-.home-artwork__trail .home-artwork__flow-shimmer {
-  stroke: #fffdf4;
-  stroke-width: 6;
-  filter: url(#findtrail-flow-soft);
-  stroke-dasharray: 5 95;
-  stroke-dashoffset: 7;
-  animation: findtrail-ribbon-head 7s ease-in-out 1 both;
-}
-
-.home-artwork__arrival-haze,
-.home-artwork__arrival-dot {
+.home-artwork__orb-haze,
+.home-artwork__orb-shell,
+.home-artwork__orb-core {
   transform-box: fill-box;
   transform-origin: center;
+  animation: findtrail-orb-state 8.8s ease-in-out .35s 1 both;
+}
+
+.home-artwork__orb-haze {
+  fill: #f4d58d;
+  opacity: .42;
+  filter: url(#findtrail-orb-haze);
+}
+
+.home-artwork__orb-shell {
+  fill: rgba(255, 247, 220, .9);
+  stroke: rgba(232, 199, 131, .92);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px rgba(255, 231, 157, .82));
+}
+
+.home-artwork__orb-core {
+  fill: #fffdf4;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, .95));
+}
+
+.home-artwork__miss-pulse,
+.home-artwork__miss-core,
+.home-artwork__found-pulse,
+.home-artwork__found-core {
   opacity: 0;
-  animation: findtrail-arrival 7s ease-in-out 1 both;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
-.home-artwork__arrival-haze {
-  fill: #f1d28a;
-  filter: url(#findtrail-flow-haze);
+.home-artwork__miss-pulse {
+  fill: #c85f5f;
+  filter: url(#findtrail-orb-haze);
 }
 
-.home-artwork__arrival-dot {
-  fill: #fff8d2;
-  filter: drop-shadow(0 0 8px rgba(255,235,166,.92));
+.home-artwork__miss-core {
+  fill: #d66f6a;
+  filter: drop-shadow(0 0 7px rgba(190, 72, 72, .75));
 }
 
-@keyframes findtrail-ribbon-travel {
-  0%, 7% {
-    stroke-dashoffset: 30;
-    opacity: 0;
+.home-artwork__miss-pulse--bed,
+.home-artwork__miss-core--bed {
+  animation: findtrail-miss-bed 8.8s ease-in-out .35s 1 both;
+}
+
+.home-artwork__miss-pulse--kitchen,
+.home-artwork__miss-core--kitchen {
+  animation: findtrail-miss-kitchen 8.8s ease-in-out .35s 1 both;
+}
+
+.home-artwork__found-pulse {
+  fill: #e8c783;
+  filter: url(#findtrail-orb-haze);
+  animation: findtrail-found-pulse 8.8s cubic-bezier(.2,.8,.2,1) .35s 1 both;
+}
+
+.home-artwork__found-core {
+  fill: #f8e7a9;
+  filter: drop-shadow(0 0 9px rgba(232,199,131,.95));
+  animation: findtrail-found-core 8.8s cubic-bezier(.2,.8,.2,1) .35s 1 both;
+}
+
+@keyframes findtrail-guide-once {
+  0%, 4% { opacity: 0; stroke-dashoffset: 18; }
+  12% { opacity: .24; }
+  30% { opacity: .46; }
+  72% { opacity: .42; }
+  88% { opacity: .22; }
+  100% { opacity: 0; stroke-dashoffset: -36; }
+}
+
+@keyframes findtrail-orb-visibility {
+  0%, 2% { opacity: 0; }
+  7%, 96% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes findtrail-orb-state {
+  0%, 9% {
+    fill: #fffdf4;
+    stroke: #e8c783;
+    transform: scale(.82);
   }
   13% {
-    opacity: .4;
+    fill: #d96f69;
+    stroke: #b84f4f;
+    transform: scale(1.08);
   }
-  20% {
-    opacity: 1;
+  21% {
+    fill: #c85f5f;
+    stroke: #a94444;
+    transform: scale(.92);
   }
-  74% {
-    opacity: .98;
+  28%, 48% {
+    fill: #fffdf4;
+    stroke: #e8c783;
+    transform: scale(1);
   }
-  83% {
-    opacity: .42;
+  52% {
+    fill: #d96f69;
+    stroke: #b84f4f;
+    transform: scale(1.08);
   }
-  92%, 100% {
-    stroke-dashoffset: -100;
-    opacity: 0;
+  59% {
+    fill: #c85f5f;
+    stroke: #a94444;
+    transform: scale(.92);
   }
-}
-
-@keyframes findtrail-ribbon-head {
-  0%, 7% {
-    stroke-dashoffset: 7;
-    opacity: 0;
-  }
-  15% {
-    opacity: .5;
-  }
-  22% {
-    opacity: 1;
-  }
-  74% {
-    opacity: .9;
-  }
-  85% {
-    opacity: .24;
-  }
-  92%, 100% {
-    stroke-dashoffset: -121;
-    opacity: 0;
-  }
-}
-
-@keyframes findtrail-arrival {
-  0%, 74% {
-    transform: scale(.56);
-    opacity: 0;
-  }
-  81% {
-    opacity: .3;
+  66%, 84% {
+    fill: #fffdf4;
+    stroke: #e8c783;
+    transform: scale(1);
   }
   87% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  94% {
+    fill: #f4dda0;
+    stroke: #d7b563;
     transform: scale(1.18);
-    opacity: .28;
+  }
+  91% {
+    fill: #fff7d3;
+    stroke: #e8c783;
+    transform: scale(.88);
+  }
+  95% {
+    fill: #f5dfa2;
+    stroke: #d7b563;
+    transform: scale(1.2);
   }
   100% {
-    transform: scale(1.24);
-    opacity: 0;
+    fill: #fff4c9;
+    stroke: #e8c783;
+    transform: scale(1);
   }
 }
 
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-haze,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-body,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-core,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-shimmer,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__arrival-haze,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__arrival-dot {
+@keyframes findtrail-miss-bed {
+  0%, 10% { opacity: 0; transform: scale(.45); }
+  14% { opacity: .7; transform: scale(.9); }
+  18% { opacity: .94; transform: scale(1.13); }
+  23% { opacity: .18; transform: scale(1.35); }
+  28%, 100% { opacity: 0; transform: scale(1.45); }
+}
+
+@keyframes findtrail-miss-kitchen {
+  0%, 49% { opacity: 0; transform: scale(.45); }
+  53% { opacity: .7; transform: scale(.9); }
+  57% { opacity: .94; transform: scale(1.13); }
+  62% { opacity: .18; transform: scale(1.35); }
+  67%, 100% { opacity: 0; transform: scale(1.45); }
+}
+
+@keyframes findtrail-found-pulse {
+  0%, 84% { opacity: 0; transform: scale(.45); }
+  88% { opacity: .34; transform: scale(.8); }
+  91% { opacity: .95; transform: scale(1.12); }
+  95% { opacity: .46; transform: scale(1.38); }
+  100% { opacity: 0; transform: scale(1.58); }
+}
+
+@keyframes findtrail-found-core {
+  0%, 84% { opacity: 0; transform: scale(.7); }
+  88% { opacity: .86; transform: scale(1); }
+  91% { opacity: 1; transform: translateY(-4px) scale(1.16); }
+  94% { opacity: 1; transform: translateY(2px) scale(.94); }
+  97% { opacity: .94; transform: translateY(-2px) scale(1.08); }
+  100% { opacity: 0; transform: translateY(0) scale(1); }
+}
+
+:root[data-motion="reduced"] .home-artwork__search-guide,
+:root[data-motion="reduced"] .home-artwork__search-orb,
+:root[data-motion="reduced"] .home-artwork__orb-haze,
+:root[data-motion="reduced"] .home-artwork__orb-shell,
+:root[data-motion="reduced"] .home-artwork__orb-core,
+:root[data-motion="reduced"] .home-artwork__miss-pulse,
+:root[data-motion="reduced"] .home-artwork__miss-core,
+:root[data-motion="reduced"] .home-artwork__found-pulse,
+:root[data-motion="reduced"] .home-artwork__found-core {
   animation: none !important;
 }
 
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-body,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-core {
-  stroke-dasharray: 100;
-  stroke-dashoffset: 0;
-  opacity: .62;
-}
-
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-haze,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__flow-shimmer,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__arrival-haze,
-:root[data-motion="reduced"] .home-artwork__trail .home-artwork__arrival-dot {
+:root[data-motion="reduced"] .home-artwork__search-guide,
+:root[data-motion="reduced"] .home-artwork__miss-pulse,
+:root[data-motion="reduced"] .home-artwork__miss-core,
+:root[data-motion="reduced"] .home-artwork__search-orb {
   display: none;
 }
 
+:root[data-motion="reduced"] .home-artwork__found-core {
+  opacity: .82;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-haze,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-body,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-core,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-shimmer,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__arrival-haze,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__arrival-dot {
+  :root:not([data-motion="full"]) .home-artwork__search-guide,
+  :root:not([data-motion="full"]) .home-artwork__search-orb,
+  :root:not([data-motion="full"]) .home-artwork__orb-haze,
+  :root:not([data-motion="full"]) .home-artwork__orb-shell,
+  :root:not([data-motion="full"]) .home-artwork__orb-core,
+  :root:not([data-motion="full"]) .home-artwork__miss-pulse,
+  :root:not([data-motion="full"]) .home-artwork__miss-core,
+  :root:not([data-motion="full"]) .home-artwork__found-pulse,
+  :root:not([data-motion="full"]) .home-artwork__found-core {
     animation: none !important;
   }
 
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-body,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-core {
-    stroke-dasharray: 100;
-    stroke-dashoffset: 0;
-    opacity: .62;
+  :root:not([data-motion="full"]) .home-artwork__search-guide,
+  :root:not([data-motion="full"]) .home-artwork__miss-pulse,
+  :root:not([data-motion="full"]) .home-artwork__miss-core,
+  :root:not([data-motion="full"]) .home-artwork__search-orb {
+    display: none;
   }
 
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-haze,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__flow-shimmer,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__arrival-haze,
-  :root:not([data-motion="full"]) .home-artwork__trail .home-artwork__arrival-dot {
-    display: none;
+  :root:not([data-motion="full"]) .home-artwork__found-core {
+    opacity: .82;
   }
 }
