@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { DEFAULT_SETTINGS, STORAGE_KEY } from './storage'
@@ -33,7 +33,9 @@ describe('FindTrail app', () => {
     const lastPlaceHeading = await screen.findByRole('heading', { name: 'Where were you when you last definitely had it?' })
     expect(lastPlaceHeading).toHaveFocus()
     fireEvent.click(screen.getByText('At home'))
-    fireEvent.click(await screen.findByText('Came in or left'))
+    const lastMomentHeading = await screen.findByRole('heading', { name: 'What happened around that time?' })
+    await waitFor(() => expect(lastMomentHeading).toHaveFocus())
+    fireEvent.click(screen.getByText('Came in or left'))
     expect(await screen.findByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
     expect(screen.getByText('Search this area only')).toBeInTheDocument()
   })
