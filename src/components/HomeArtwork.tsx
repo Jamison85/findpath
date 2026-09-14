@@ -4,8 +4,7 @@ const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
 const HOME_TRAIL_PLAYED_KEY = 'findtrail:home-trail-played'
 
-// The guide follows three deliberate legs in the artwork: phone to remote,
-// remote to kitchen counter, and counter to the keys by the door.
+// One continuous route that stays inside the illustrated trail corridor and ends at the keys.
 const trailPath = [
   'M548 888',
   'C575 820 650 790 720 720C805 635 890 520 965 416',
@@ -34,7 +33,7 @@ export function HomeArtwork() {
   }, [playTrail])
 
   return (
-    <div className="home-artwork" role="img" aria-label="A calm guide retraces a path from the phone to the remote, kitchen, and missing keys">
+    <div className="home-artwork" role="img" aria-label="A red search light follows the illustrated trail and blinks green at the missing keys">
       <img
         src={artworkUrl}
         alt=""
@@ -56,13 +55,10 @@ export function HomeArtwork() {
           <circle className="home-artwork__orb-core" r="6.5" />
           <animateMotion
             begin=".3s"
-            dur="6.2s"
+            dur="5.45s"
             fill="freeze"
             path={trailPath}
-            calcMode="spline"
-            keyPoints="0;0;.42;.42;.72;.72;1;1"
-            keyTimes="0;.08;.42;.49;.67;.74;.96;1"
-            keySplines=".22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1"
+            calcMode="paced"
           />
         </g>
       </svg>
