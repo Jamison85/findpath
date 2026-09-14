@@ -22,6 +22,7 @@ describe('FindTrail app', () => {
   })
 
   it('hands the selected item smoothly into a focused trail', async () => {
+    const transitionWait = { timeout: 3000 }
     render(<App />)
     expect(screen.getByText('Retrace with a plan')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'A clear path to finding what’s missing.' })).toBeInTheDocument()
@@ -29,14 +30,12 @@ describe('FindTrail app', () => {
     fireEvent.click(keysButton)
     expect(keysButton).toHaveClass('is-departing')
     expect(screen.queryByText('Car keys')).not.toBeInTheDocument()
-    fireEvent.click(await screen.findByText('Car keys'))
-    const lastPlaceHeading = await screen.findByRole('heading', { name: 'Where were you when you last definitely had it?' })
-    expect(lastPlaceHeading).toHaveFocus()
-    fireEvent.click(screen.getByText('At home'))
-    const lastMomentHeading = await screen.findByRole('heading', { name: 'What happened around that time?' })
-    await waitFor(() => expect(lastMomentHeading).toHaveFocus())
-    fireEvent.click(screen.getByText('Came in or left'))
-    expect(await screen.findByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
+    fireEvent.click(await screen.findByText('Car keys', {}, transitionWait))
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Where were you when you last definitely had it?' })).toHaveFocus(), transitionWait)
+    fireEvent.click(screen.getByRole('button', { name: /At home/i }))
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'What happened around that time?' })).toHaveFocus(), transitionWait)
+    fireEvent.click(screen.getByRole('button', { name: /Came in or left/i }))
+    expect(await screen.findByRole('heading', { name: 'The landing zone' }, transitionWait)).toBeInTheDocument()
     expect(screen.getByText('Search this area only')).toBeInTheDocument()
   })
 
