@@ -1,6 +1,6 @@
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
-const trailPath = 'M1008 1080C894 938 858 818 952 710c94-108 250-124 250-242 0-101-196-112-285-190-54-47-42-110 33-184'
+const trailPath = 'M1008 1080C914 974 860 884 892 804c18-46 64-65 104-92 68-46 129-93 168-157 41-67 56-134 22-183-30-43-104-54-178-94-70-38-108-82-88-126 18-39 67-58 128-83 44-18 72-40 84-69'
 
 export function HomeArtwork() {
   return (
