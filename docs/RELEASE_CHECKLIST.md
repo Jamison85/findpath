@@ -25,15 +25,18 @@
 - [x] Installed-app update notice preserves user control
 - [x] History can be cleared only after confirmation
 - [x] Calm reset resumes the correct screen
+- [x] Clue selections settle before advancing and skip delay with reduced motion
+- [x] Last checked exact spot carries into the found-place screen
+- [x] Final trail stop opens a clear item-specific recovery plan
 - [x] Speech features fail gracefully when browser support is absent
 - [x] Offline app shell opens after one successful online visit
 
 ## Visual and accessibility
 
-- [ ] Home 2.2.2 at 360 × 800 Android viewport
-- [ ] Home 2.2.2 at 412 × 915 Galaxy-class viewport
-- [ ] Home 2.2.2 at 430 × 932 iPhone-class viewport
-- [ ] Home 2.2.2 at 768 × 1024 tablet viewport
+- [ ] Search journey 2.3.0 at 360 × 800 Android viewport
+- [ ] Search journey 2.3.0 at 412 × 915 Galaxy-class viewport
+- [ ] Search journey 2.3.0 at 430 × 932 iPhone-class viewport
+- [ ] Search journey 2.3.0 at 768 × 1024 tablet viewport
 - [x] Keyboard-only navigation
 - [x] Visible focus states and logical focus order
 - [x] 200% text zoom without lost controls

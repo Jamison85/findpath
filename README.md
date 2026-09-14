@@ -2,7 +2,7 @@
 
 FindTrail is a calm, local-first progressive web app for finding misplaced items. It turns a frantic whole-house search into one useful place at a time, remembers where items were found, and gently promotes likely locations during future searches.
 
-Version 2.2 introduces a purpose-built Home experience: original memory-trail artwork, a denser no-scroll phone layout, tactile item shortcuts, a focused custom-item sheet, and a useful recent-find card that opens the exact history entry. Version 2.2.1 refines the artwork motion into one calm, session-only search demonstration that briefly checks the remote and kitchen before finding the keys. Version 2.2.2 completes the tactile Home handoff with sage press feedback and a brief selected-item transition into the first clue. It retains the saved home spots, learned search patterns, local backup and restore, and update-ready notices added in 2.1.
+Version 2.3 carries the finished Home identity through the full search journey. Clues now read as one compact guided route, each active stop has a clearer hierarchy and exact-spot progress, checked locations carry directly into the found-place screen, and an unsuccessful trail ends with a calm item-specific recovery plan. The saved home spots, learned search patterns, local backup and restore, and update-ready notices remain intact.
 
 ## Product principles
 

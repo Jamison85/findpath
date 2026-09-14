@@ -30,10 +30,12 @@ describe('FindTrail app', () => {
     expect(keysButton).toHaveClass('is-departing')
     expect(screen.queryByText('Car keys')).not.toBeInTheDocument()
     fireEvent.click(await screen.findByText('Car keys'))
+    const lastPlaceHeading = await screen.findByRole('heading', { name: 'Where were you when you last definitely had it?' })
+    expect(lastPlaceHeading).toHaveFocus()
     fireEvent.click(screen.getByText('At home'))
-    fireEvent.click(screen.getByText('Came in or left'))
-    expect(screen.getByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
-    expect(screen.getByText('Search this spot. Not the whole universe.')).toBeInTheDocument()
+    fireEvent.click(await screen.findByText('Came in or left'))
+    expect(await screen.findByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
+    expect(screen.getByText('Search this area only')).toBeInTheDocument()
   })
 
   it('accepts a custom item name', () => {
@@ -45,26 +47,26 @@ describe('FindTrail app', () => {
     expect(screen.getByRole('heading', { name: 'How does this item usually travel?' })).toBeInTheDocument()
   })
 
-  it('saves a custom home spot, pins the item, and promotes that home next time', () => {
+  it('saves a custom home spot, pins the item, and promotes that home next time', async () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /other item/i }))
     fireEvent.change(screen.getByLabelText('What are we finding?'), { target: { value: 'Work badge' } })
     fireEvent.click(screen.getByRole('button', { name: 'Start a trail' }))
     fireEvent.click(screen.getByText('Carried in a hand'))
-    fireEvent.click(screen.getByText('At home'))
-    fireEvent.click(screen.getByText('Came in or left'))
-    fireEvent.click(screen.getByRole('button', { name: 'Found it' }))
+    fireEvent.click(await screen.findByText('At home'))
+    fireEvent.click(await screen.findByText('Came in or left'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Found it' }))
     fireEvent.change(screen.getByLabelText('Or type the exact place'), { target: { value: 'Entry tray' } })
     fireEvent.click(screen.getByRole('checkbox', { name: /make this work badge’s home spot/i }))
-    fireEvent.click(screen.getByRole('button', { name: 'Save found place' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save this found place' }))
     fireEvent.click(screen.getByRole('button', { name: 'Back home' }))
 
     const pinned = screen.getByRole('group', { name: 'Pinned items' })
     fireEvent.click(within(pinned).getByRole('button', { name: 'Work badge' }))
     fireEvent.click(screen.getByText('Carried in a hand'))
-    fireEvent.click(screen.getByText('At home'))
-    fireEvent.click(screen.getByText('Came in or left'))
-    expect(screen.getByRole('heading', { name: 'Its saved home' })).toBeInTheDocument()
+    fireEvent.click(await screen.findByText('At home'))
+    fireEvent.click(await screen.findByText('Came in or left'))
+    expect(await screen.findByRole('heading', { name: 'Its saved home' })).toBeInTheDocument()
     expect(screen.getByText(/start at entry tray/i)).toBeInTheDocument()
   })
 
@@ -72,12 +74,64 @@ describe('FindTrail app', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /keys/i }))
     fireEvent.click(await screen.findByText('Car keys'))
-    fireEvent.click(screen.getByText('At home'))
-    fireEvent.click(screen.getByText('Came in or left'))
-    fireEvent.click(screen.getByRole('button', { name: 'I need a reset' }))
+    fireEvent.click(await screen.findByText('At home'))
+    fireEvent.click(await screen.findByText('Came in or left'))
+    fireEvent.click(await screen.findByRole('button', { name: 'I need a reset' }))
     expect(screen.getByRole('heading', { name: 'The search can wait one breath.' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Return to my trail' }))
     expect(screen.getByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
+  })
+
+  it('carries the last checked spot into the found-place step', async () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: /keys/i }))
+    fireEvent.click(await screen.findByText('Car keys'))
+    fireEvent.click(await screen.findByText('At home'))
+    fireEvent.click(await screen.findByText('Came in or left'))
+    fireEvent.click(await screen.findByRole('button', { name: 'Entry table or hook' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Found it' }))
+    expect(screen.getByLabelText('Or type the exact place')).toHaveValue('Entry table or hook')
+    expect(screen.getByText('Ready to save')).toBeInTheDocument()
+  })
+
+  it('skips clue handoff delays when reduced motion is enabled', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 3,
+      activeSearch: null,
+      settings: { ...DEFAULT_SETTINGS, motion: 'reduced' },
+      history: [],
+      savedItems: [],
+    }))
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: /keys/i }))
+    fireEvent.click(screen.getByText('Car keys'))
+    expect(screen.getByText('At home')).toBeInTheDocument()
+  })
+
+  it('turns the final stop into a clear recovery plan', () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 3,
+      settings: DEFAULT_SETTINGS,
+      history: [],
+      savedItems: [],
+      activeSearch: {
+        version: 3,
+        id: 'active-1',
+        itemId: 'keys',
+        itemLabel: 'Keys',
+        answers: {},
+        stops: [{ id: 'slow-sweep', title: 'Slow final sweep', instruction: 'Check slowly.', spots: ['Likeliest place'], kind: 'final' }],
+        currentIndex: 0,
+        checkedSpots: {},
+        startedAt: '2026-09-14T12:00:00.000Z',
+        lastUpdatedAt: '2026-09-14T12:00:00.000Z',
+      },
+    }))
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Resume trail' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Still missing · next steps' }))
+    expect(screen.getByRole('heading', { name: 'Your next best moves' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /take a 30-second reset/i })).toBeInTheDocument()
   })
 
   it('announces an installed-app update and applies it on request', () => {

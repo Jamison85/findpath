@@ -39,6 +39,11 @@ function dateLabel(value: string): string {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(date)
 }
 
+function shouldReduceMotion(settings: Settings): boolean {
+  return settings.motion === 'reduced'
+    || (settings.motion === 'system' && (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false))
+}
+
 export default function App() {
   const [data, setData] = useState<PersistedData>(() => loadData())
   const [screen, setScreen] = useState<Screen>(() => new URLSearchParams(window.location.search).get('screen') === 'calm' ? 'calm' : 'home')
@@ -183,7 +188,9 @@ export default function App() {
   }
 
   function openFound() {
-    setFoundLocation('')
+    const stop = active?.stops[active.currentIndex]
+    const checked = stop ? active?.checkedSpots[stop.id] ?? [] : []
+    setFoundLocation(checked.at(-1) ?? '')
     setSaveAsHome(false)
     setPinCustomItem(true)
     setScreen('found')
@@ -309,7 +316,7 @@ export default function App() {
       {storageError && <div className="storage-banner" role="alert">This browser blocked saving. Keep this tab open until your search is finished.<button onClick={() => setStorageError(false)} aria-label="Dismiss"><Icon name="close" size={17} /></button></div>}
       <main id="app-content" className={rootScreen ? 'app-content app-content--with-nav' : 'app-content'}>
         {screen === 'home' && <HomeView data={data} customOpen={customOpen} customName={customName} setCustomOpen={setCustomOpen} setCustomName={setCustomName} onStart={startSearch} onResume={resumeSearch} onDiscard={discardActive} onOpenHistory={openHistoryEntry} />}
-        {screen === 'clues' && active && activeItem && <ClueView search={active} question={activeItem.questions[clueIndex]} index={clueIndex} total={activeItem.questions.length} onAnswer={answerClue} onBack={() => clueIndex === 0 ? setScreen('home') : setClueIndex((value) => value - 1)} />}
+        {screen === 'clues' && active && activeItem && <ClueView search={active} settings={data.settings} question={activeItem.questions[clueIndex]} index={clueIndex} total={activeItem.questions.length} onAnswer={answerClue} onBack={() => clueIndex === 0 ? setScreen('home') : setClueIndex((value) => value - 1)} />}
         {screen === 'trail' && active && active.stops[active.currentIndex] && <TrailView search={active} settings={data.settings} onBack={() => setScreen('home')} onToggleSpot={toggleSpot} onNext={nextStop} onFound={openFound} onCalm={() => { setReturnScreen('trail'); setScreen('calm') }} onEditClues={() => { setClueIndex(0); setScreen('clues') }} />}
         {screen === 'found' && active && <FoundView search={active} value={foundLocation} saveAsHome={saveAsHome} pinCustomItem={pinCustomItem} onChange={setFoundLocation} onSaveAsHome={setSaveAsHome} onPinCustomItem={setPinCustomItem} onSave={saveFound} onBack={() => setScreen('trail')} />}
         {screen === 'complete' && foundSummary && <CompleteView summary={foundSummary} onHome={() => setScreen('home')} onAnother={() => setScreen('home')} />}
@@ -352,9 +359,7 @@ function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, 
       return
     }
 
-    const reduceMotion = data.settings.motion === 'reduced'
-      || (data.settings.motion === 'system' && (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false))
-    if (reduceMotion) {
+    if (shouldReduceMotion(data.settings)) {
       onStart(itemId)
       return
     }
@@ -448,52 +453,94 @@ function HomeView({ data, customOpen, customName, setCustomOpen, setCustomName, 
   )
 }
 
-function ClueView({ search, question, index, total, onAnswer, onBack }: { search: ActiveSearch; question: ClueQuestion; index: number; total: number; onAnswer: (value: string) => void; onBack: () => void }) {
+function ClueView({ search, settings, question, index, total, onAnswer, onBack }: { search: ActiveSearch; settings: Settings; question: ClueQuestion; index: number; total: number; onAnswer: (value: string) => void; onBack: () => void }) {
+  const [selectedValue, setSelectedValue] = useState<string | null>(null)
+  const selectionTimer = useRef<number | null>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const stepLabels = ['About it', 'Last place', 'Last moment']
+
+  useEffect(() => {
+    setSelectedValue(null)
+    headingRef.current?.focus({ preventScroll: true })
+    return () => {
+      if (selectionTimer.current !== null) window.clearTimeout(selectionTimer.current)
+      selectionTimer.current = null
+    }
+  }, [question.id])
+
+  function chooseAnswer(value: string) {
+    if (selectionTimer.current !== null) return
+    setSelectedValue(value)
+    if (shouldReduceMotion(settings)) {
+      onAnswer(value)
+      return
+    }
+    selectionTimer.current = window.setTimeout(() => {
+      selectionTimer.current = null
+      onAnswer(value)
+    }, 160)
+  }
+
   return (
     <section className="view clue-view" aria-labelledby="view-heading">
       <header className="topbar">
         <button className="icon-button" onClick={onBack} aria-label="Go back"><Icon name="back" /></button>
-        <div className="topbar__trail"><span>{search.itemLabel}</span><strong>Clue {index + 1} of {total}</strong></div>
+        <div className="topbar__trail"><span>Building a trail for {search.itemLabel.toLocaleLowerCase()}</span><strong>Clue {index + 1} of {total}</strong></div>
         <span />
       </header>
-      <div className="clue-progress" aria-hidden="true">{Array.from({ length: total }).map((_, value) => <span key={value} className={value <= index ? 'is-active' : ''} />)}</div>
-      <div className="clue-copy">
-        <span className="eyebrow">Closest answer wins</span>
-        <h1 id="view-heading" tabIndex={-1}>{question.title}</h1>
-        <p>{question.helper}</p>
-      </div>
-      <div className="choice-list">
-        {question.options.map((option) => (
-          <button key={option.value} className={search.answers[question.id] === option.value ? 'choice-button is-selected' : 'choice-button'} onClick={() => onAnswer(option.value)}>
-            <span><strong>{option.label}</strong>{option.detail && <small>{option.detail}</small>}</span>
-            <span className="choice-button__arrow">→</span>
-          </button>
-        ))}
-      </div>
-      <p className="reassurance"><Icon name="calm" size={17} /> No perfect remembering required. We are just choosing a useful first direction.</p>
+      <ol className="clue-route" aria-label={`Clue ${index + 1} of ${total}`}>
+        {Array.from({ length: total }).map((_, value) => <li key={value} className={value < index ? 'is-complete' : value === index ? 'is-current' : ''}><span>{value < index ? <Icon name="check" size={13} /> : value + 1}</span><small>{stepLabels[value]}</small></li>)}
+      </ol>
+      <article className="clue-panel">
+        <div className="clue-item"><span><Icon name={ITEM_BY_ID[search.itemId].icon} size={21} /></span><div><small>Looking for</small><strong>{search.itemLabel}</strong></div></div>
+        <div className="clue-copy">
+          <span className="eyebrow">One useful clue</span>
+          <h1 ref={headingRef} id="view-heading" tabIndex={-1}>{question.title}</h1>
+          <p>{question.helper}</p>
+        </div>
+        <div className="choice-list">
+          {question.options.map((option) => {
+            const selected = selectedValue !== null ? selectedValue === option.value : search.answers[question.id] === option.value
+            return (
+              <button key={option.value} className={selected ? 'choice-button is-selected' : 'choice-button'} onClick={() => chooseAnswer(option.value)}>
+                <span><strong>{option.label}</strong>{option.detail && <small>{option.detail}</small>}</span>
+                <span className="choice-button__arrow">{selected ? <Icon name="check" size={18} /> : <Icon name="forward" size={18} />}</span>
+              </button>
+            )
+          })}
+        </div>
+        <p className="reassurance"><Icon name="calm" size={17} /> No perfect remembering required. Pick the closest answer and keep moving.</p>
+      </article>
     </section>
   )
 }
 
 function FoundView({ search, value, saveAsHome, pinCustomItem, onChange, onSaveAsHome, onPinCustomItem, onSave, onBack }: { search: ActiveSearch; value: string; saveAsHome: boolean; pinCustomItem: boolean; onChange: (value: string) => void; onSaveAsHome: (value: boolean) => void; onPinCustomItem: (value: boolean) => void; onSave: () => void; onBack: () => void }) {
   const stop = search.stops[search.currentIndex]
-  const options = getFoundSuggestions(search.itemId, stop)
+  const options = getFoundSuggestions(search.itemId, stop).slice(0, 6)
   return (
     <section className="view found-view" aria-labelledby="view-heading">
-      <button className="icon-button found-view__back" onClick={onBack} aria-label="Back to search"><Icon name="back" /></button>
-      <div className="success-mark"><Icon name="spark" size={35} /></div>
-      <span className="eyebrow">Crisis demoted</span>
-      <h1 id="view-heading" tabIndex={-1}>There it is.</h1>
-      <p>Save the exact spot. FindTrail will treat it as a usual suspect next time.</p>
-      <div className="location-chips" role="group" aria-label="Where the item was found">
-        {options.map((option) => <button key={option} className={value === option ? 'chip is-selected' : 'chip'} onClick={() => onChange(option)}>{option}</button>)}
+      <header className="topbar found-topbar">
+        <button className="icon-button" onClick={onBack} aria-label="Back to search"><Icon name="back" /></button>
+        <div className="topbar__trail"><span>{search.itemLabel}</span><strong>Found it</strong></div>
+        <span />
+      </header>
+      <div className="found-hero">
+        <div className="success-mark"><Icon name="spark" size={31} /></div>
+        <div><span className="eyebrow">Trail successful</span><h1 id="view-heading" tabIndex={-1}>There it is.</h1><p>Tell FindTrail where it turned up so the next search starts smarter.</p></div>
       </div>
-      <label className="field"><span>Or type the exact place</span><input value={value} onChange={(event) => onChange(event.target.value)} placeholder="Example: black hoodie pocket" maxLength={80} /></label>
-      <div className="remember-options">
-        <SettingToggle label={`Make this ${search.itemLabel}’s home spot`} detail="FindTrail will put it at the front next time." checked={saveAsHome} onChange={onSaveAsHome} />
-        {search.itemId === 'other' && saveAsHome && <SettingToggle label={`Pin ${search.itemLabel} on Home`} detail="Start this search again with one tap." checked={pinCustomItem} onChange={onPinCustomItem} />}
-      </div>
-      <button className="button button--primary button--wide" onClick={onSave} disabled={!value.trim()}>Save found place</button>
+      <section className="found-panel" aria-labelledby="found-location-heading">
+        <div className="found-panel__heading"><div><span>One last useful detail</span><h2 id="found-location-heading">Where was it?</h2></div>{value && <span className="found-ready"><Icon name="check" size={15} />Ready to save</span>}</div>
+        <div className="location-chips" role="group" aria-label="Where the item was found">
+          {options.map((option) => <button key={option} className={value === option ? 'chip is-selected' : 'chip'} onClick={() => onChange(option)}>{option}</button>)}
+        </div>
+        <label className="field"><span>Or type the exact place</span><input value={value} onChange={(event) => onChange(event.target.value)} placeholder="Example: black hoodie pocket" maxLength={80} /></label>
+        <div className="remember-options">
+          <SettingToggle label={`Make this ${search.itemLabel}’s home spot`} detail="FindTrail will check here first next time." checked={saveAsHome} onChange={onSaveAsHome} />
+          {search.itemId === 'other' && saveAsHome && <SettingToggle label={`Pin ${search.itemLabel} on Home`} detail="Start this search again with one tap." checked={pinCustomItem} onChange={onPinCustomItem} />}
+        </div>
+        <button className="button button--primary button--wide" onClick={onSave} disabled={!value.trim()}><Icon name="check" size={19} />Save this found place</button>
+      </section>
     </section>
   )
 }
@@ -583,7 +630,7 @@ function SettingsView({ data, canInstall, backupStatus, onUpdate, onUpdateSavedI
         {backupStatus && <p className="backup-status" role="status">{backupStatus}</p>}
         <button className="button button--danger-outline" onClick={onClear} disabled={!data.history.length}>Clear found history</button>
       </div>
-      <footer className="version-note">FindTrail 2.2.2 · A clear path to finding what’s missing.</footer>
+      <footer className="version-note">FindTrail 2.3.0 · A clear path to finding what’s missing.</footer>
     </section>
   )
 }
@@ -617,17 +664,19 @@ function EndView({ search, onFound, onReset, onRestart, onHome }: { search: Acti
   const actions = getRecoveryActions(search)
   return (
     <section className="view end-view" aria-labelledby="view-heading">
-      <div className="end-view__mark"><Icon name="trail" size={36} /></div>
-      <span className="eyebrow">First trail complete</span>
-      <h1 id="view-heading" tabIndex={-1}>Don’t search harder yet.</h1>
-      <p>You checked {search.stops.length} sensible stops. A reset or another set of eyes usually beats turning the house upside down.</p>
-      <div className="recovery-actions" aria-label={`Next actions for ${search.itemLabel}`}>
-        {actions.map((action, index) => <article key={action.title}><span>{index + 1}</span><div><strong>{action.title}</strong><p>{action.detail}</p></div></article>)}
-      </div>
-      <button className="button button--found button--wide" onClick={onFound}>Actually, I found it</button>
-      <button className="button button--primary button--wide" onClick={onReset}>Take a 30-second reset</button>
-      <button className="button button--secondary button--wide" onClick={onRestart}>Repeat the trail slowly</button>
-      <button className="button button--quiet button--wide" onClick={onHome}>Keep this trail saved</button>
+      <div className="end-hero"><div className="end-view__mark"><Icon name="trail" size={34} /></div><div><span className="eyebrow">First trail complete</span><h1 id="view-heading" tabIndex={-1}>Don’t search harder yet.</h1><p>You checked {search.stops.length} sensible stops. A short reset or another set of eyes usually beats turning the house upside down.</p></div></div>
+      <section className="recovery-panel" aria-labelledby="recovery-heading">
+        <div className="recovery-panel__heading"><span>Still missing</span><h2 id="recovery-heading">Your next best moves</h2></div>
+        <div className="recovery-actions" aria-label={`Next actions for ${search.itemLabel}`}>
+          {actions.map((action, index) => <article key={action.title}><span>{index + 1}</span><div><strong>{action.title}</strong><p>{action.detail}</p></div></article>)}
+        </div>
+        <div className="end-actions">
+          <button className="button button--primary button--wide" onClick={onReset}><Icon name="calm" size={19} />Take a 30-second reset</button>
+          <button className="button button--secondary button--wide" onClick={onRestart}><Icon name="refresh" size={18} />Repeat the trail slowly</button>
+          <button className="button button--found button--wide" onClick={onFound}><Icon name="spark" size={18} />Actually, I found it</button>
+          <button className="button button--quiet button--wide" onClick={onHome}>Keep this trail saved</button>
+        </div>
+      </section>
     </section>
   )
 }
