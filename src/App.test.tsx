@@ -180,7 +180,7 @@ describe('FindTrail app', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /open keys, found at blue bowl, in history/i }))
     expect(screen.getByRole('heading', { name: 'Found history' })).toBeInTheDocument()
-    expect(screen.getByText('Blue bowl')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /keys.*blue bowl/i })).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('requires confirmation before clearing found history', () => {
