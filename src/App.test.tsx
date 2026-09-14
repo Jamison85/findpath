@@ -83,6 +83,14 @@ describe('FindTrail app', () => {
   })
 
   it('returns to the same trail after a reset', async () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 3,
+      activeSearch: null,
+      settings: { ...DEFAULT_SETTINGS, motion: 'reduced' },
+      history: [],
+      savedItems: [],
+    }))
+
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /keys/i }))
     fireEvent.click(await screen.findByText('Car keys'))
@@ -95,6 +103,14 @@ describe('FindTrail app', () => {
   })
 
   it('carries the last checked spot into the found-place step', async () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 3,
+      activeSearch: null,
+      settings: { ...DEFAULT_SETTINGS, motion: 'reduced' },
+      history: [],
+      savedItems: [],
+    }))
+
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /keys/i }))
     fireEvent.click(await screen.findByText('Car keys'))
