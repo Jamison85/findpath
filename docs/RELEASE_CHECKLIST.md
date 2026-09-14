@@ -30,10 +30,10 @@
 
 ## Visual and accessibility
 
-- [ ] Home 2.2 at 360 × 800 Android viewport
-- [ ] Home 2.2 at 412 × 915 Galaxy-class viewport
-- [ ] Home 2.2 at 430 × 932 iPhone-class viewport
-- [ ] Home 2.2 at 768 × 1024 tablet viewport
+- [ ] Home 2.2.1 at 360 × 800 Android viewport
+- [ ] Home 2.2.1 at 412 × 915 Galaxy-class viewport
+- [ ] Home 2.2.1 at 430 × 932 iPhone-class viewport
+- [ ] Home 2.2.1 at 768 × 1024 tablet viewport
 - [x] Keyboard-only navigation
 - [x] Visible focus states and logical focus order
 - [x] 200% text zoom without lost controls

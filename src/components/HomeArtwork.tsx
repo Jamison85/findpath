@@ -1,12 +1,40 @@
+import { useEffect, useState } from 'react'
+
 const artworkUrl = `${import.meta.env.BASE_URL}home-memory-trail.webp`
 
-// Keep the Home story simple: one orb follows the same broad sweep as the illustrated
-// trail. Two brief red moments happen along the route; the keys are the green finish.
-const trailPath = 'M735 742C680 690 660 610 720 555C790 490 900 485 990 455C1100 418 1240 430 1384 476C1320 430 1235 390 1165 340C1125 310 1095 270 1068 242'
+const HOME_TRAIL_PLAYED_KEY = 'findtrail:home-trail-played'
+
+// The guide follows three deliberate legs in the artwork: phone to remote,
+// remote to kitchen counter, and counter to the keys by the door.
+const trailPath = [
+  'M548 888',
+  'C575 820 650 790 720 720C805 635 890 520 965 416',
+  'C1080 430 1248 452 1384 476',
+  'C1298 430 1218 370 1152 344C1124 294 1094 260 1068 242',
+].join('')
+
+function hasPlayedThisSession(): boolean {
+  try {
+    return window.sessionStorage.getItem(HOME_TRAIL_PLAYED_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
 
 export function HomeArtwork() {
+  const [playTrail] = useState(() => !hasPlayedThisSession())
+
+  useEffect(() => {
+    if (!playTrail) return
+    try {
+      window.sessionStorage.setItem(HOME_TRAIL_PLAYED_KEY, 'true')
+    } catch {
+      // The one-time motion still works when storage is unavailable.
+    }
+  }, [playTrail])
+
   return (
-    <div className="home-artwork" role="img" aria-label="A glowing guide follows the trail, checks twice, then finds the missing keys">
+    <div className="home-artwork" role="img" aria-label="A calm guide retraces a path from the phone to the remote, kitchen, and missing keys">
       <img
         src={artworkUrl}
         alt=""
@@ -15,25 +43,26 @@ export function HomeArtwork() {
         fetchPriority="high"
         draggable="false"
       />
-      <svg className="home-artwork__trail" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <svg className={`home-artwork__trail ${playTrail ? 'is-playing' : 'is-settled'}`} viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <defs>
           <filter id="findtrail-orb-haze" x="-120%" y="-120%" width="340%" height="340%">
-            <feGaussianBlur stdDeviation="14" />
+            <feGaussianBlur stdDeviation="12" />
           </filter>
         </defs>
 
         <g className="home-artwork__search-orb">
-          <circle className="home-artwork__orb-haze" r="46" />
-          <circle className="home-artwork__orb-shell" r="18" />
-          <circle className="home-artwork__orb-core" r="7.5" />
+          <circle className="home-artwork__orb-haze" r="40" />
+          <circle className="home-artwork__orb-shell" r="16" />
+          <circle className="home-artwork__orb-core" r="6.5" />
           <animateMotion
-            begin=".35s"
-            dur="8s"
+            begin=".3s"
+            dur="6.2s"
             fill="freeze"
             path={trailPath}
             calcMode="spline"
-            keyTimes="0;1"
-            keySplines=".25 .1 .25 1"
+            keyPoints="0;0;.42;.42;.72;.72;1;1"
+            keyTimes="0;.08;.42;.49;.67;.74;.96;1"
+            keySplines=".22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1;.22 .7 .22 1"
           />
         </g>
       </svg>

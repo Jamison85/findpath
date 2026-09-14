@@ -6,7 +6,19 @@ import { DEFAULT_SETTINGS, STORAGE_KEY } from './storage'
 describe('FindTrail app', () => {
   beforeEach(() => {
     localStorage.clear()
+    sessionStorage.clear()
     vi.spyOn(window, 'confirm').mockReturnValue(true)
+  })
+
+  it('plays the calm home trail once per session', () => {
+    const first = render(<App />)
+    const trail = document.querySelector('.home-artwork__trail')
+    expect(trail).toHaveClass('is-playing')
+    expect(sessionStorage.getItem('findtrail:home-trail-played')).toBe('true')
+
+    first.unmount()
+    render(<App />)
+    expect(document.querySelector('.home-artwork__trail')).toHaveClass('is-settled')
   })
 
   it('turns three clues into a focused trail', () => {
