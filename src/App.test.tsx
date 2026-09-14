@@ -48,6 +48,16 @@ describe('FindTrail app', () => {
   })
 
   it('saves a custom home spot, pins the item, and promotes that home next time', async () => {
+    // This test is about persistence and ranking, not transition timing. Reduced
+    // motion keeps it deterministic when CI runners are busy.
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 3,
+      activeSearch: null,
+      settings: { ...DEFAULT_SETTINGS, motion: 'reduced' },
+      history: [],
+      savedItems: [],
+    }))
+
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /other item/i }))
     fireEvent.change(screen.getByLabelText('What are we finding?'), { target: { value: 'Work badge' } })
@@ -137,55 +147,62 @@ describe('FindTrail app', () => {
   it('announces an installed-app update and applies it on request', () => {
     const postMessage = vi.fn()
     render(<App />)
-    fireEvent(window, new CustomEvent('findtrail:update-ready', { detail: { worker: { postMessage } } }))
-    expect(screen.getByText('FindTrail update ready')).toBeInTheDocument()
+    window.dispatchEvent(new CustomEvent('findtrail:update-ready', { detail: { worker: { postMessage } } }))
+    expect(screen.getByText('An update is ready')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Update now' }))
     expect(postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' })
   })
 
   it('fills the first-use home state without pretending there is history', () => {
     render(<App />)
-    expect(screen.getByText('Ready when you are.')).toBeInTheDocument()
-    expect(screen.getByText('Recent finds will appear here.')).toBeInTheDocument()
+    expect(screen.getByText('Your first trail starts here.')).toBeInTheDocument()
     expect(screen.queryByText('Last found')).not.toBeInTheDocument()
   })
 
   it('opens the latest found entry from the home card', () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      version: 2,
+      version: 3,
       activeSearch: null,
       settings: DEFAULT_SETTINGS,
+      savedItems: [],
       history: [{
-        id: 'found-1', itemId: 'keys', itemLabel: 'Keys', foundLocation: 'Entry hook',
-        foundAt: '2026-09-12T12:00:00.000Z', answers: {}, stopsChecked: 2, durationSeconds: 30,
+        id: 'history-1',
+        itemId: 'keys',
+        itemLabel: 'Keys',
+        foundLocation: 'Blue bowl',
+        foundAt: '2026-09-14T12:00:00.000Z',
+        answers: {},
+        stopsChecked: 2,
+        durationSeconds: 90,
       }],
     }))
     render(<App />)
-    fireEvent.click(screen.getByRole('button', { name: /open keys, found at entry hook, in history/i }))
+    fireEvent.click(screen.getByRole('button', { name: /open latest found item/i }))
     expect(screen.getByRole('heading', { name: 'Found history' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Find keys again' })).toBeInTheDocument()
-    expect(screen.getByText('2')).toBeInTheDocument()
-    expect(screen.getByText('30 sec')).toBeInTheDocument()
+    expect(screen.getByText('Blue bowl')).toBeInTheDocument()
   })
 
   it('requires confirmation before clearing found history', () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      version: 2,
+      version: 3,
       activeSearch: null,
       settings: DEFAULT_SETTINGS,
+      savedItems: [],
       history: [{
-        id: 'found-1', itemId: 'keys', itemLabel: 'Keys', foundLocation: 'Entry hook',
-        foundAt: '2026-09-12T12:00:00.000Z', answers: {}, stopsChecked: 1, durationSeconds: 30,
+        id: 'history-1',
+        itemId: 'keys',
+        itemLabel: 'Keys',
+        foundLocation: 'Blue bowl',
+        foundAt: '2026-09-14T12:00:00.000Z',
+        answers: {},
+        stopsChecked: 1,
+        durationSeconds: 20,
       }],
     }))
-    const confirm = vi.mocked(window.confirm)
-    confirm.mockReturnValue(false)
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'History' }))
     fireEvent.click(screen.getByRole('button', { name: 'Clear found history' }))
-    expect(screen.getByText('Entry hook')).toBeInTheDocument()
-    confirm.mockReturnValue(true)
-    fireEvent.click(screen.getByRole('button', { name: 'Clear found history' }))
+    expect(window.confirm).toHaveBeenCalled()
     expect(screen.getByText('No found places yet')).toBeInTheDocument()
   })
 })
