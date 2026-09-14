@@ -144,18 +144,19 @@ describe('FindTrail app', () => {
     expect(screen.getByRole('button', { name: /take a 30-second reset/i })).toBeInTheDocument()
   })
 
-  it('announces an installed-app update and applies it on request', () => {
+  it('announces an installed-app update and applies it on request', async () => {
     const postMessage = vi.fn()
     render(<App />)
     window.dispatchEvent(new CustomEvent('findtrail:update-ready', { detail: { worker: { postMessage } } }))
-    expect(screen.getByText('An update is ready')).toBeInTheDocument()
+    expect(await screen.findByText('FindTrail update ready')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Update now' }))
     expect(postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' })
   })
 
   it('fills the first-use home state without pretending there is history', () => {
     render(<App />)
-    expect(screen.getByText('Your first trail starts here.')).toBeInTheDocument()
+    expect(screen.getByText('Your first trail')).toBeInTheDocument()
+    expect(screen.getByText('Ready when you are.')).toBeInTheDocument()
     expect(screen.queryByText('Last found')).not.toBeInTheDocument()
   })
 
@@ -177,7 +178,7 @@ describe('FindTrail app', () => {
       }],
     }))
     render(<App />)
-    fireEvent.click(screen.getByRole('button', { name: /open latest found item/i }))
+    fireEvent.click(screen.getByRole('button', { name: /open keys, found at blue bowl, in history/i }))
     expect(screen.getByRole('heading', { name: 'Found history' })).toBeInTheDocument()
     expect(screen.getByText('Blue bowl')).toBeInTheDocument()
   })
