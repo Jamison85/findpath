@@ -536,7 +536,7 @@ function FoundView({ search, value, saveAsHome, pinCustomItem, onChange, onSaveA
         </div>
         <label className="field"><span>Or type the exact place</span><input value={value} onChange={(event) => onChange(event.target.value)} placeholder="Example: black hoodie pocket" maxLength={80} /></label>
         <div className="remember-options">
-          <SettingToggle label={`Make this ${search.itemLabel}’s home spot`} detail="FindTrail will check here first next time." checked={saveAsHome} onChange={onSaveAsHome} />
+          <SettingToggle label={`Save this as the home spot for ${search.itemLabel}`} detail="FindTrail will check here first next time." checked={saveAsHome} onChange={onSaveAsHome} />
           {search.itemId === 'other' && saveAsHome && <SettingToggle label={`Pin ${search.itemLabel} on Home`} detail="Start this search again with one tap." checked={pinCustomItem} onChange={onPinCustomItem} />}
         </div>
         <button className="button button--primary button--wide" onClick={onSave} disabled={!value.trim()}><Icon name="check" size={19} />Save this found place</button>
