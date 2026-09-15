@@ -1,4 +1,4 @@
-# FindTrail 2.4.0 QA report
+# FindTrail 2.4.1 QA report
 
 Run date: 2026-09-15
 
@@ -7,7 +7,7 @@ Run date: 2026-09-15
 | Check | Result |
 | --- | --- |
 | TypeScript typecheck | Pass |
-| Vitest unit and component tests | 34 passed across 6 files |
+| Vitest unit and component tests | 35 passed across 6 files |
 | Vite production build | Pass |
 | Production dependency audit | 0 vulnerabilities |
 | Home artwork optimization | Pass: 1536 × 1024 WebP, 132 KB |
@@ -20,6 +20,7 @@ Run date: 2026-09-15
 | Ambient reset regression | Pass: three timed phases, progress semantics, skip, and trail return remain functional |
 | Reset rendering | Pass: lightweight Canvas waves with a CSS/static reduced-motion fallback |
 | Reset audio | Pass: opt-in only; Off is the default and no sound asset or network request is required |
+| Focused-screen notices | Pass: update notices wait until Home, History, or Settings instead of shrinking a reset or active search |
 | Hosted GitHub Actions | Required before merge |
 
 ## Browser and resilience checks

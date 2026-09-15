@@ -28,6 +28,7 @@
 - [x] Ambient horizon reset completes three truthful 10-second cycles
 - [x] Reset sound is opt-in, defaults Off, and stops on exit
 - [x] Touch ripples are decorative and reduced motion receives a still horizon
+- [x] Update notices wait until a root screen and never shrink the reset
 - [x] Clue selections settle before advancing and skip delay with reduced motion
 - [x] Last checked exact spot carries into the found-place screen
 - [x] Final trail stop opens a clear item-specific recovery plan
