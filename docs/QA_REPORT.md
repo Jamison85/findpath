@@ -1,13 +1,13 @@
-# FindTrail 2.3.0 QA report
+# FindTrail 2.4.0 QA report
 
-Run date: 2026-09-14
+Run date: 2026-09-15
 
 ## Automated release checks
 
 | Check | Result |
 | --- | --- |
 | TypeScript typecheck | Pass |
-| Vitest unit and component tests | 33 passed across 5 files |
+| Vitest unit and component tests | 34 passed across 6 files |
 | Vite production build | Pass |
 | Production dependency audit | 0 vulnerabilities |
 | Home artwork optimization | Pass: 1536 × 1024 WebP, 132 KB |
@@ -17,6 +17,9 @@ Run date: 2026-09-14
 | Clue journey regression | Pass: answers settle before advancing and reduced motion skips the delay |
 | Found-place carry-forward | Pass: the last checked exact spot is ready to save automatically |
 | Recovery ending | Pass: the final stop leads to an item-specific next-moves panel |
+| Ambient reset regression | Pass: three timed phases, progress semantics, skip, and trail return remain functional |
+| Reset rendering | Pass: lightweight Canvas waves with a CSS/static reduced-motion fallback |
+| Reset audio | Pass: opt-in only; Off is the default and no sound asset or network request is required |
 | Hosted GitHub Actions | Required before merge |
 
 ## Browser and resilience checks
@@ -24,10 +27,12 @@ Run date: 2026-09-14
 - The Home layout uses a fixed no-scroll composition at standard text sizes and deliberately restores scrolling for large-text accessibility mode.
 - Custom-item entry opens in a focused modal sheet instead of increasing the Home page height.
 - The latest-found card opens the exact expandable history entry; first use has a purposeful empty state.
-- Clue, trail, found, settings, breathing reset, pinned-item home, saved-home trail, and item-specific ending retain responsive max-width and overflow safeguards.
+- Clue, trail, found, settings, ambient reset, pinned-item home, saved-home trail, and item-specific ending retain responsive max-width and overflow safeguards.
 - 200% text enlargement reflows without horizontal overflow or lost controls.
 - Keyboard entry reaches the skip link first, then exposes visible focus on controls.
-- Reduced-motion preference suppresses both the breathing animation and Home guide.
+- Reduced-motion preference replaces the moving horizon with a still composition and suppresses the Home guide.
+- The reset uses three honest 10-second cycles: 4 seconds in, 2 seconds open, and 4 seconds out.
+- Wind and chime are generated locally only after a user selects them; sound defaults to Off and stops when the reset ends or closes.
 - The Home search guide uses brief, non-looping motion and does not replay after returning Home in the same session.
 - Item tiles use a tightened shadow and sage icon well while handing the selection into the first clue.
 - Clue choices use a compact two-column route at standard text size and return to a single column for large-text mode.
@@ -44,6 +49,6 @@ Run date: 2026-09-14
 
 ## Still required before final production approval
 
-- Confirm the 2.3 clue, trail, found, and recovery screens on the hosted build at 360 × 800, 412 × 915, 430 × 932, and 768 × 1024.
+- Confirm the 2.4 reset screen on the hosted build at 360 × 800, 412 × 915, 430 × 932, and 768 × 1024.
 - Install on Jamo's Galaxy S25 Ultra and complete one real search.
 - Confirm microphone permission and speech behavior on the actual device/browser.
