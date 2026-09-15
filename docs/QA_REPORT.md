@@ -21,7 +21,7 @@ Run date: 2026-09-15
 | Reset rendering | Pass: lightweight Canvas waves with a CSS/static reduced-motion fallback |
 | Reset audio | Pass: opt-in only; Off is the default and no sound asset or network request is required |
 | Focused-screen notices | Pass: update notices wait until Home, History, or Settings instead of shrinking a reset or active search |
-| Hosted GitHub Actions | Required before merge |
+| Hosted GitHub Actions | Pass: PR #11 and live-QA fix PR #12 |
 
 ## Browser and resilience checks
 
@@ -34,6 +34,7 @@ Run date: 2026-09-15
 - Reduced-motion preference replaces the moving horizon with a still composition and suppresses the Home guide.
 - The reset uses three honest 10-second cycles: 4 seconds in, 2 seconds open, and 4 seconds out.
 - Wind and chime are generated locally only after a user selects them; sound defaults to Off and stops when the reset ends or closes.
+- The live 2.4.1 reset completes without application console errors, switches all three sound modes, reacts to touch, and returns to the exact active trail stop.
 - The Home search guide uses brief, non-looping motion and does not replay after returning Home in the same session.
 - Item tiles use a tightened shadow and sage icon well while handing the selection into the first clue.
 - Clue choices use a compact two-column route at standard text size and return to a single column for large-text mode.
