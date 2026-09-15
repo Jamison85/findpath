@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { DEFAULT_SETTINGS, STORAGE_KEY } from './storage'
@@ -103,6 +103,29 @@ describe('FindTrail app', () => {
     expect(screen.getByRole('button', { name: 'Return to my trail' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Skip' }))
     expect(screen.getByRole('heading', { name: 'The landing zone' })).toBeInTheDocument()
+  })
+
+  it('keeps an update notice out of the focused reset', async () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 3,
+      activeSearch: null,
+      settings: { ...DEFAULT_SETTINGS, motion: 'reduced' },
+      history: [],
+      savedItems: [],
+    }))
+
+    render(<App />)
+    act(() => window.dispatchEvent(new CustomEvent('findtrail:update-ready', { detail: { worker: { postMessage: vi.fn() } } })))
+    expect(screen.getByText('FindTrail update ready')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /keys/i }))
+    fireEvent.click(await screen.findByText('Car keys'))
+    fireEvent.click(await screen.findByText('At home'))
+    fireEvent.click(await screen.findByText('Came in or left'))
+    fireEvent.click(await screen.findByRole('button', { name: 'I need a reset' }))
+
+    expect(screen.queryByText('FindTrail update ready')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Return to my trail' })).toBeInTheDocument()
   })
 
   it('carries the last checked spot into the found-place step', async () => {
