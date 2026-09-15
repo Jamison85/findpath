@@ -68,7 +68,7 @@ describe('FindTrail app', () => {
     fireEvent.click(await screen.findByText('Came in or left'))
     fireEvent.click(await screen.findByRole('button', { name: 'Found it' }))
     fireEvent.change(screen.getByLabelText('Or type the exact place'), { target: { value: 'Entry tray' } })
-    fireEvent.click(screen.getByRole('checkbox', { name: /make this work badge’s home spot/i }))
+    fireEvent.click(screen.getByRole('checkbox', { name: /save this as the home spot for work badge/i }))
     fireEvent.click(screen.getByRole('button', { name: 'Save this found place' }))
     fireEvent.click(screen.getByRole('button', { name: 'Back home' }))
 
